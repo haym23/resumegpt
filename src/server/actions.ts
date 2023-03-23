@@ -1,5 +1,5 @@
 import HttpError from '@wasp/core/HttpError.js';
-import type { Job, Resume, CoverLetter, School, User } from '@wasp/entities';
+import type { Job, Resume, CoverLetter } from '@wasp/entities';
 import type { GenerateResume, CreateJob, UpdateJob, UpdateResume, UpdateCoverLetter, GenerateCoverLetter } from '@wasp/actions/types';
 
 import { ChatGPTAPI } from 'chatgpt';
@@ -12,8 +12,8 @@ const gptConfig = `You are a resume generator.
 You shall be given a personal information about someone including their job history, education and skills.
 You shall generate responses that can be used on a resume.
 You shall write in a modern, professional style.
-Your response shall only contain json code, no other text, as to translate easily to a javascript object.
-The json response shall contain fields for the following: jobs, education, objective, additionalInformation.
+Your response shall only contain JSON as plain text, no other text, as to translate easily to a javascript object.
+The JSON response shall contain fields for the following: jobs, education, objective, skills.
 All fields shall be strings unless otherwise specified
 
 The jobs field shall contain an array of objects with the following fields: title, location, company, responsibilities.
@@ -25,11 +25,11 @@ The accomplishments field shall contain full sentences in an array format.
 The education field shall contain an array of objects with the following fields: level, schoolName, startYear, endYear, major, gpa, accomplishments.
 The accomplishments field shall contain full sentences in an array format.
 
-The additionalInformation field shall contain full sentences in an array format.
+The skills field shall be an array of strings, containing skills
 
 The objective field shall be a string written by you based on the information above and the information to be provided.
 
-You shall use the following data to generate the json responses for the resume:`;
+You shall use the following data to generate the JSON responses for the resume:`;
 
 export const generateCoverLetter: GenerateCoverLetter<CoverLetter> = async (
   { content },
@@ -43,20 +43,22 @@ export const generateResume: GenerateResume<Resume> = async (
 ) => {
   try {
     const response = await api.sendMessage(gptConfig);
-    const resumeWithResponse = JSON.parse(response.text);
+    let resumeWithResponse;
+    if (response.text.charAt(0) === '`') {
+      resumeWithResponse = JSON.parse(response.text.charAt(0).replace('`', ''))
+    } else {
+      resumeWithResponse = JSON.parse(response.text);
+    }
+    
     const resumeOut = Object.assign(resume, resumeWithResponse);
-    const result = context.entities.Resume.create({
+    const result = await context.entities.Resume.create({
       data: {
         objective: resumeOut.objective,
         jobs: {create: resumeOut.jobs},
         education: {create: resumeOut.education},
-        user: resumeOut.user,
+        user: {create: resumeOut.user},
       }
     });
-
-    console.log('Logging result type');
-    console.log(result);
-    console.log(typeof(result));
 
     return result;
   } catch (e) {

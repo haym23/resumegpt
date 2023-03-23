@@ -18,36 +18,48 @@ import {
   SliderThumb,
   Tooltip,
 } from '@chakra-ui/react';
-import { ChangeEvent } from 'react';
-import { useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
-import { useQuery } from '@wasp/queries';
-import getJob from '@wasp/queries/getJob';
-import generateCoverLetter from '@wasp/actions/generateCoverLetter';
-import createJob from '@wasp/actions/createJob';
-import updateCoverLetter from '@wasp/actions/updateCoverLetter';
-import * as pdfjsLib from 'pdfjs-dist';
-import { useState, useEffect, useRef } from 'react';
-import { CoverLetter, Job } from '@wasp/entities';
+import { useState, useEffect } from 'react';
 import BorderBox from './BorderBox';
-import { convertToSliderValue, convertToSliderLabel } from './CreativitySlider';
-import type { CoverLetterPayload } from './types';
 
 function ContactBox({ updateForm }) {
-  const [formValues, setFormValues] = useState({});
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState(null);
+  const [emailAddress, setEmailAddress] = useState('');
 
   function handleChange(event) {
-    setFormValues((prevFormValues) => ({
-      ...prevFormValues,
-      [event.target.id]: event.target.value,
-    }));
-
-    updateForm({
-      formValues: {
-        ...formValues,
-      }
-    });
+    switch(event.target.id) {
+      case 'firstName':
+        setFirstName(event.target.value);
+        break;
+      case 'lastName':
+        setLastName(event.target.value);
+        break;
+      case 'address':
+        setAddress(event.target.value);
+        break;
+      case 'phone':
+        setPhone(Number(event.target.value));
+        break;
+      case 'emailAddress':
+        setEmailAddress(event.target.value);
+        break;
+      default:
+        console.log('Unkown target interaction');
+        break;
+    }
   }
+
+  useEffect(() => {
+    updateForm({
+      firstName,
+      lastName,
+      address,
+      phone,
+      emailAddress
+    });
+  }, [firstName, lastName, address, phone, emailAddress]);
 
   return (
     <div>
@@ -62,7 +74,7 @@ function ContactBox({ updateForm }) {
                 borderRadius={0}
                 borderTopRadius={7}
                 placeholder='first name'
-                value={formValues.firstName}
+                value={firstName}
                 onChange={handleChange}
               />
             </FormControl>
@@ -71,7 +83,7 @@ function ContactBox({ updateForm }) {
                 id='lastName'
                 borderRadius={0}
                 placeholder='last name'
-                value={formValues.lastName}
+                value={lastName}
                 onChange={handleChange}
               />
             </FormControl>
@@ -80,16 +92,16 @@ function ContactBox({ updateForm }) {
                 id='emailAddress'
                 borderRadius={0}
                 placeholder='email address'
-                value={formValues.emailAddress}
+                value={emailAddress}
                 onChange={handleChange}
               />
             </FormControl>
             <FormControl>
               <Input
-                id='phoneNumber'
+                id='phone'
                 borderRadius={0}
                 placeholder='phone number'
-                value={formValues.phoneNumber}
+                value={phone}
                 onChange={handleChange}
               />
             </FormControl>

@@ -1,0 +1,131 @@
+/* reset styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+/* container styles */
+.container {
+  width: 100%;
+  width: 670px; /* width: 7in; */
+  height: 900px; /* or height: 9.5in; */
+  margin: 0 auto;
+  padding-top: 20px;
+  padding-right: 30px;
+  padding-left: 30px;
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  line-height: 1.5;
+  background-color: white;
+  color: black;
+}
+
+/* header styles */
+.header {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.address, .email {
+  margin-bottom: 5px;
+}
+
+.objective {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* section styles */
+.section-title {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.section-content {
+  margin-bottom: 15px;
+}
+
+/* education styles */
+.degree {
+  margin-bottom: 5px;
+  display:inline-block;
+}
+
+.school {
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-align: left;
+  display:inline-block;
+}
+
+.date {
+  font-size: 10px;
+  font-weight: normal;
+  margin-bottom: 5px;
+  text-align: right;
+  float:right;
+}
+
+.city {
+  font-size: 10px;
+  font-weight: normal;
+  margin-bottom: 5px;
+  text-align: right;
+  float:right;
+}
+
+.coursework {
+  font-style: italic;
+}
+
+/* experience styles */
+.job-title {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.employer {
+  margin-bottom: 5px;
+}
+
+.job-description {
+  margin-left: 10px;
+  margin-bottom: 5px;
+  padding-left: 20px;
+  padding-top: 5px;
+}
+
+.job-description li {
+  list-style: disc;
+  margin-bottom: 5px;
+}
+
+/* skills styles */
+.skills-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.skills-list li {
+  margin: 5px;
+  padding: 5px 10px;
+  border: 1px solid #333;
+  border-radius: 20px;
+}
+
+  /* Black line */
+hr {
+  border-top: 1px solid black;
+}

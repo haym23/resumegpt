@@ -2,42 +2,49 @@ import {
   Flex,
   Spacer,
   Heading,
-  Text,
-  FormErrorMessage,
   FormControl,
-  FormLabel,
   Input,
   Textarea,
-  Button,
-  FormHelperText,
-  Code,
-  Checkbox,
-  Spinner,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
-  Tooltip,
   CloseButton
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 
 function JobForm({ index, onDecrementJobs, updateForm }) {
-  const [formValues, setFormValues] = useState({});
+  const [title, setTitle] = useState('');
+  const [location, setLocation] = useState('');
+  const [company, setCompany] = useState('');
+  const [responsibilities, setResponsibilities] = useState('');
+
 
   function handleChange(event) {
-    setFormValues((prevFormValues) => ({
-      ...prevFormValues,
-      [event.target.id]: event.target.value,
-    }));
-
-    updateForm({
-      formValues: {
-        ...formValues,
-      }
-    }, index);
+    switch(event.target.id) {
+      case 'title':
+        setTitle(event.target.value);
+        break;
+      case 'company':
+        setCompany(event.target.value);
+        break;
+      case 'location':
+        setLocation(event.target.value);
+        break;
+      case 'responsibilities':
+        setResponsibilities([event.target.value]);
+        break;
+      default:
+        console.log('Unkown target interaction');
+        break;
+    }
   }
+
+  useEffect(() => {
+    updateForm({
+      title,
+      location,
+      company,
+      responsibilities: [responsibilities],
+    }, index);
+  }, [title, location, company, responsibilities])
 
   return (
     <div>
@@ -54,7 +61,7 @@ function JobForm({ index, onDecrementJobs, updateForm }) {
           borderRadius={0}
           borderTopRadius={7}
           placeholder='job title'
-          value={formValues.title}
+          value={title}
           onChange={handleChange}
         />
       </FormControl>
@@ -63,7 +70,7 @@ function JobForm({ index, onDecrementJobs, updateForm }) {
           id='company'
           borderRadius={0}
           placeholder='company'
-          value={formValues.company}
+          value={company}
           onChange={handleChange}
         />
       </FormControl>
@@ -72,16 +79,17 @@ function JobForm({ index, onDecrementJobs, updateForm }) {
           id='location'
           borderRadius={0}
           placeholder='location'
-          value={formValues.location}
+          value={location}
           onChange={handleChange}
         />
       </FormControl>
       <FormControl>
         <Textarea
-          id='description'
+          id='responsibilities'
           borderRadius={0}
           placeholder='accomplishments, responsibilities, other notes...'
-          value={formValues.responsibilities}
+          value={responsibilities}
+          onChange={handleChange}
         />
       </FormControl>
     </div>

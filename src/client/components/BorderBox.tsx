@@ -2,7 +2,7 @@ import { Box, VStack } from '@chakra-ui/react';
 
 export default function BorderBox({ children }: { children: React.ReactNode }) {
   return (
-    <Box width={['sm', 'lg', 'xl']} borderRadius='lg' bgGradient='linear(to-b, orange.100, purple.300)' mt={7}>
+    <Box width={'fit'} borderRadius='lg' bgGradient='linear(to-b, orange.100, purple.300)' mt={7}>
       <VStack
         bgColor='bg-contrast-overlay'
         border='3px solid transparent'

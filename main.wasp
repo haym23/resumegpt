@@ -1,4 +1,4 @@
-app applyai {
+app resumegpt {
   wasp: {
     version: "^0.9.0"
   },
@@ -45,15 +45,15 @@ app applyai {
 
 entity User {=psl
   id          Int     @id @default(autoincrement())
-  username    String  @unique
-  password    String
+  username    String?  @unique
+  password    String?
   letters     CoverLetter[]
   resumes     Resume[]
   firstName     String
   lastName      String
-  email         String
-  phone         Int
-  address       String
+  address       String?
+  phone         Int?
+  emailAddress  String
   externalAuthAssociations  SocialLogin[]
 psl=}
 
@@ -83,10 +83,10 @@ entity Resume {=psl
   jobs        Job[]
   education   School[]
   tokenUsage  Int?
-  user        User?      @relation(fields: [userId], references: [id])
-  userId      Int?
+  user        User       @relation(fields: [userId], references: [id])
+  userId      Int
   objective   String?
-  additionalInformation   String[]
+  skills      String[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime?  @updatedAt
 psl=}
@@ -130,6 +130,11 @@ page MainPage {
 route CoverLetterPage { path: "/cover-letter/:id", to: CoverLetterPage }
 page CoverLetterPage {
   component: import { CoverLetter } from "@client/CoverLetter"
+}
+
+route ResumePage { path: "/resume/:id", to: ResumePage }
+page ResumePage {
+  component: import { ResumePage } from "@client/ResumePage"
 }
 
 route LoginRoute { path: "/login", to: LoginPage }
@@ -186,14 +191,29 @@ query getJobs {
   entities: [Job]
 }
 
+query getSchools {
+  fn: import { getSchools } from "@server/queries.js",
+  entities: [School]
+}
+
 query getJob {
   fn: import { getJob } from "@server/queries.js",
   entities: [Job]
 }
 
+query getUser {
+  fn: import { getUser } from "@server/queries.js",
+  entities: [User]
+}
+
 query getCoverLetter {
   fn: import { getCoverLetter } from "@server/queries.js",
   entities: [CoverLetter]
+}
+
+query getResume {
+  fn: import { getResume } from "@server/queries.js",
+  entities: [Resume]
 }
 
 query getCoverLetters {
