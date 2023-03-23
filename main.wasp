@@ -2,7 +2,7 @@ app applyai {
   wasp: {
     version: "^0.9.0"
   },
-  title: "CoverLetterGPT",
+  title: "ResumeGPT",
   // Auth out of the box! https://wasp-lang.dev/docs/language/features#authentication--authorization
   auth: {
     userEntity: User,
@@ -33,7 +33,9 @@ app applyai {
     ("pdfjs-dist", "3.3.122"),
     ("@types/pdfjs-dist", "2.10.378"),
     ("react-query", "^3.39.2"),
-    ("axios", "^0.27.2")
+    ("axios", "^0.27.2"),
+    ("chatgpt", "^5.0.10"),
+    ("chatgpt-prompts", "^2.0.1")
   ],
 }
 
@@ -46,7 +48,12 @@ entity User {=psl
   username    String  @unique
   password    String
   letters     CoverLetter[]
-  jobs        Job[]
+  resumes     Resume[]
+  firstName     String
+  lastName      String
+  email         String
+  phone         Int
+  address       String
   externalAuthAssociations  SocialLogin[]
 psl=}
 
@@ -65,26 +72,50 @@ entity CoverLetter {=psl
   title      String
   content    String
   tokenUsage Int
-  job        Job        @relation(fields: [jobId], references: [id])
-  jobId      String
   user       User?      @relation(fields: [userId], references: [id])
   userId     Int?
   createdAt  DateTime   @default(now())
   updatedAt  DateTime?  @updatedAt
 psl=}
 
+entity Resume {=psl
+  id          String     @id @default(uuid())
+  jobs        Job[]
+  education   School[]
+  tokenUsage  Int?
+  user        User?      @relation(fields: [userId], references: [id])
+  userId      Int?
+  objective   String?
+  additionalInformation   String[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime?  @updatedAt
+psl=}
+
 entity Job {=psl
-  id            String         @id @default(uuid())
+  id            String        @id @default(uuid())
   title         String
   company       String
   location      String
-  description   String
-  coverLetter   CoverLetter[]
-  user          User?          @relation(fields: [userId], references: [id])
-  userId        Int?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  isCompleted   Boolean        @default(false)
+  responsibilities  String[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  resume        Resume?       @relation(fields: [resumeId], references: [id])
+  resumeId      String?
+psl=}
+
+entity School {=psl
+  id            String        @id @default(uuid())
+  schoolName    String
+  startYear     Int
+  endYear       Int
+  gpa           Float
+  level         String
+  major         String?
+  accomplishments String[]
+  resume        Resume?       @relation(fields: [resumeId], references: [id])
+  resumeId      String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 psl=}
 
 /* 📡 These are the Wasp Routes (You can protect them easily w/ 'authRequired: true');
@@ -108,13 +139,11 @@ page LoginPage {
 
 route JobsRoute { path: "/jobs", to: JobsPage }
 page JobsPage {
-  authRequired: true,
   component: import Jobs from "@client/JobsPage"
 }
 
 route ProfileRoute { path: "/profile", to: ProfilePage }
 page ProfilePage {
-  authRequired: true,
   component: import Profile from "@client/ProfilePage"
 }
 
@@ -125,6 +154,11 @@ page ProfilePage {
 action generateCoverLetter {
   fn: import { generateCoverLetter } from "@server/actions.js",
   entities: [CoverLetter]
+}
+
+action generateResume {
+  fn: import { generateResume } from "@server/actions.js",
+  entities: [Resume]
 }
 
 action createJob {
@@ -140,6 +174,11 @@ action updateJob {
 action updateCoverLetter {
   fn: import { updateCoverLetter } from "@server/actions.js",
   entities: [Job, CoverLetter]
+}
+
+action updateResume {
+  fn: import { updateResume } from "@server/actions.js",
+  entities: [Resume]
 }
 
 query getJobs {

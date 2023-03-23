@@ -1,128 +1,77 @@
 import HttpError from '@wasp/core/HttpError.js';
-import fetch from 'node-fetch';
-import type { Job, CoverLetter } from '@wasp/entities';
-import type { GenerateCoverLetter, CreateJob, UpdateCoverLetter, UpdateJob } from '@wasp/actions/types';
+import type { Job, Resume, CoverLetter, School, User } from '@wasp/entities';
+import type { GenerateResume, CreateJob, UpdateJob, UpdateResume, UpdateCoverLetter, GenerateCoverLetter } from '@wasp/actions/types';
 
-const gptConfig = {
-  completeCoverLetter: `You are a cover letter generator.
-You will be given a job description along with the job applicant's resume.
-You will write a cover letter for the applicant that matches their past experiences from the resume with the job description.
-Rather than simply outlining the applicant's past experiences, you will give more detail and explain how those experiences will help the applicant succeed in the new job.
-You will write the cover letter in a modern, professional style without being too formal, as a software developer might do naturally.`,
-  coverLetterWithAWittyRemark: `You are a cover letter generator.
-You will be given a job description along with the job applicant's resume.
-You will write a cover letter for the applicant that matches their past experiences from the resume with the job description.
-Rather than simply outlining the applicant's past experiences, you will give more detail and explain how those experiences will help the applicant succeed in the new job.
-You will write the cover letter in a modern, relaxed style, as a software developer might do naturally.
-Include a job related joke at the end of the cover letter.`,
-  ideasForCoverLetter:
-    "You are a cover letter idea generator. You will be given a job description along with the job applicant's resume. You will generate a bullet point list of ideas for the applicant to use in their cover letter. ",
-};
+import { ChatGPTAPI } from 'chatgpt';
 
-type CoverLetterPayload = Pick<CoverLetter, 'title' | 'jobId'> & {
-  content: string;
-  description: string;
-  isCompleteCoverLetter: boolean;
-  includeWittyRemark: boolean;
-  temperature: number;
-};
+const api = new ChatGPTAPI({
+  apiKey: process.env.OPENAI_API_KEY || ''
+});
 
-export const generateCoverLetter: GenerateCoverLetter<CoverLetterPayload, CoverLetter> = async (
-  { jobId, title, content, description, isCompleteCoverLetter, includeWittyRemark, temperature },
+const gptConfig = `You are a resume generator.
+You shall be given a personal information about someone including their job history, education and skills.
+You shall generate responses that can be used on a resume.
+You shall write in a modern, professional style.
+Your response shall only contain json code, no other text, as to translate easily to a javascript object.
+The json response shall contain fields for the following: jobs, education, objective, additionalInformation.
+All fields shall be strings unless otherwise specified
+
+The jobs field shall contain an array of objects with the following fields: title, location, company, responsibilities.
+The responsibilities field shall contain full sentences in an array format.
+
+The education field shall contain an array of objects with the following fields: level, schoolName, startYear (number), endYear (number), major, gpa (number), accomplishments.
+The accomplishments field shall contain full sentences in an array format.
+
+The education field shall contain an array of objects with the following fields: level, schoolName, startYear, endYear, major, gpa, accomplishments.
+The accomplishments field shall contain full sentences in an array format.
+
+The additionalInformation field shall contain full sentences in an array format.
+
+The objective field shall be a string written by you based on the information above and the information to be provided.
+
+You shall use the following data to generate the json responses for the resume:`;
+
+export const generateCoverLetter: GenerateCoverLetter<CoverLetter> = async (
+  { content },
   context
 ) => {
-  // if (!context.user) {
-  //   throw new HttpError(401);
-  // }
+}
 
-  let command;
-  let tokenNumber;
-  if (isCompleteCoverLetter) {
-    command = includeWittyRemark ? gptConfig.coverLetterWithAWittyRemark : gptConfig.completeCoverLetter;
-    tokenNumber = 1000;
-  } else {
-    command = gptConfig.ideasForCoverLetter;
-    tokenNumber = 500;
-  }
-
-  const payload = {
-    model: 'gpt-3.5-turbo',
-    messages: [
-      {
-        role: 'system',
-        content: command,
-      },
-      {
-        role: 'user',
-        content: `My Resume: ${content}. Job title: ${title} Job Description: ${description}.`,
-      },
-    ],
-    max_tokens: tokenNumber,
-    temperature,
-  };
-
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY!}`,
-    },
-    method: 'POST',
-    body: JSON.stringify(payload),
-  });
-
-  type OpenAIResponse = {
-    id: string;
-    object: string;
-    created: number;
-    usage: {
-      prompt_tokens: number;
-      completion_tokens: number;
-      total_tokens: number;
-    };
-    choices: [
-      {
-        index: number;
-        message: {
-          role: string;
-          content: string;
-        };
-        finish_reason: string;
-      }
-    ];
-  };
-
-  const json = (await response.json()) as OpenAIResponse;
-
-  if (!context.user) {
-    return context.entities.CoverLetter.create({
+export const generateResume: GenerateResume<Resume> = async (
+  resume,
+  context
+) => {
+  try {
+    const response = await api.sendMessage(gptConfig);
+    const resumeWithResponse = JSON.parse(response.text);
+    const resumeOut = Object.assign(resume, resumeWithResponse);
+    const result = context.entities.Resume.create({
       data: {
-        title,
-        content: json.choices[0].message.content,
-        tokenUsage: json.usage.completion_tokens,
-        job: { connect: { id: jobId } },
-      },
+        objective: resumeOut.objective,
+        jobs: {create: resumeOut.jobs},
+        education: {create: resumeOut.education},
+        user: resumeOut.user,
+      }
     });
-  }
 
-  return context.entities.CoverLetter.create({
-    data: {
-      title,
-      content: json.choices[0].message.content,
-      tokenUsage: json.usage.completion_tokens,
-      user: { connect: { id: context.user.id } },
-      job: { connect: { id: jobId } },
-    },
-  });
+    console.log('Logging result type');
+    console.log(result);
+    console.log(typeof(result));
+
+    return result;
+  } catch (e) {
+    console.log(e);
+    throw(e);
+  }
 };
 
-export type JobPayload = Pick<Job, 'title' | 'company' | 'location' | 'description'>;
+export type JobPayload = Pick<Job, 'title' | 'company' | 'location'>;
 
-export const createJob: CreateJob<JobPayload, Job> = ({ title, company, location, description }, context) => {
+export const createJob: CreateJob<JobPayload, Job> = ({ title, company, location }, context) => {
   if (!context.user) {
     return context.entities.Job.create({
       data: {
         title,
-        description,
         location,
         company,
       },
@@ -132,18 +81,16 @@ export const createJob: CreateJob<JobPayload, Job> = ({ title, company, location
   return context.entities.Job.create({
     data: {
       title,
-      description,
       location,
       company,
-      user: { connect: { id: context.user.id } },
     },
   });
 };
 
-export type UpdateJobPayload = Pick<Job, 'id' | 'title' | 'company' | 'location' | 'description' | 'isCompleted'>;
+export type UpdateJobPayload = Pick<Job, 'id' | 'title' | 'company' | 'location'>;
 
 export const updateJob: UpdateJob<UpdateJobPayload, Job> = (
-  { id, title, company, location, description, isCompleted },
+  { id, title, company, location },
   context
 ) => {
   if (!context.user) {
@@ -156,59 +103,34 @@ export const updateJob: UpdateJob<UpdateJobPayload, Job> = (
     },
     data: {
       title,
-      description,
       location,
       company,
-      isCompleted,
     },
   });
 };
 
-export type UpdateCoverLetterPayload = Pick<Job, 'id' | 'description'> &
-  Pick<CoverLetter, 'content'> & { isCompleteCoverLetter: boolean; includeWittyRemark: boolean; temperature: number };
 
-export const updateCoverLetter: UpdateCoverLetter<UpdateCoverLetterPayload, Job | CoverLetter> = async (
-  { id, description, content, isCompleteCoverLetter, includeWittyRemark, temperature },
+export const updateCoverLetter: UpdateCoverLetter<CoverLetter> = async (
+  { content },
+  context
+) => {
+}
+
+export const updateResume: UpdateResume<Resume> = async (
+  { id },
   context
 ) => {
   if (!context.user) {
     throw new HttpError(401);
   }
 
-  const job = await context.entities.Job.findFirst({
+  const foundResume = await context.entities.Resume.findFirst({
     where: {
-      id,
-      user: { id: context.user.id },
+      id: id,
     },
   });
 
-  if (!job) {
+  if (!foundResume) {
     throw new HttpError(404);
   }
-
-  const coverLetter = await generateCoverLetter(
-    {
-      jobId: id,
-      title: job.title,
-      content,
-      description: job.description,
-      isCompleteCoverLetter,
-      includeWittyRemark,
-      temperature,
-    },
-    context
-  );
-
-  return context.entities.Job.update({
-    where: {
-      id,
-    },
-    data: {
-      description,
-      coverLetter: { connect: { id: coverLetter.id } },
-    },
-    include: {
-      coverLetter: true,
-    },
-  });
 };
