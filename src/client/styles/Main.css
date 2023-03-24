@@ -1,0 +1,14 @@
+.schoolContainer {
+  display: flex;
+  width: 50%;
+}
+
+.heading {
+  font-size: 1.4vw;
+  font-weight: bold;
+  text-align: left;
+}
+
+.close {
+  margin-left: auto
+}

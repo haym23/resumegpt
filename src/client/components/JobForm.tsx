@@ -46,7 +46,7 @@ function JobForm({ index, onDecrementJobs, updateForm }) {
   }, [title, location, company, responsibilities])
 
   return (
-    <div>
+    <>
       <Flex>
         <Heading size={'md'} alignSelf={'start'} mb={3}>
           Job {index}
@@ -91,7 +91,7 @@ function JobForm({ index, onDecrementJobs, updateForm }) {
           onChange={handleChange}
         />
       </FormControl>
-    </div>
+    </>
   )
 }
 

@@ -3,7 +3,9 @@ import {
   Button,
   Code,
   Spacer,
-  Flex
+  Flex,
+  CloseButton,
+  Input
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
@@ -16,17 +18,23 @@ import JobForm from './components/JobForm';
 import ContactBox from './components/ContactBox';
 import generateResume from '@wasp/actions/generateResume';
 
+import './styles/Main.css';
+
 function MainPage() {
   const [jobToFetch, setJobToFetch] = useState<string | null>(null);
   const [isCoverLetterUpdate, setIsCoverLetterUpdate] = useState<boolean>(false);
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [schoolNames, setSchoolNames] = useState<string[]>([]);
   const [user, setUser] = useState<User>();
 
-  const { data: job, isLoading: _ } = useQuery<{ id: string | null }, Job>(
-    getJob,
-    { id: jobToFetch },
-    { enabled: !!jobToFetch }
-  );
+  const [formValues, setFormValues] = useState({});
+  const [numSchools, setNumSchools] = useState(0);
+  const [numJobs, setNumJobs] = useState(0);
+
+  function handleInputChange(event) {
+    const { id, value } = event.target;
+    setFormValues({...formValues, [id]: value});
+  }
 
   const {
     reset,
@@ -35,45 +43,33 @@ function MainPage() {
 
   const history = useHistory();
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const jobIdParam = urlParams.get('job');
+  function convertToArray(keyPrefix: string) {
+    const vals: any = [];
+    for (const key in formValues) {
+      if (key.includes(keyPrefix)) {
+        const index = Number(key.match('/\+/g'));
+        const field = key.substring(keyPrefix.length).replace(/\d+$/, "")
 
-  useEffect(() => {
-    if (jobIdParam) {
-      setJobToFetch(jobIdParam);
-      setIsCoverLetterUpdate(true);
-      resetJob();
-    } else {
-      setIsCoverLetterUpdate(false);
-      reset({
-        title: '',
-        company: '',
-        location: '',
-        description: '',
-      });
+        vals[index] = {
+          ...vals[index],
+          [field]: formValues[key]
+        };
+      }
     }
-  }, [jobIdParam, job]);
 
-  useEffect(() => {
-    resetJob();
-  }, [job]);
-
-  function resetJob() {
-    if (job) {
-      reset({
-        title: job.title,
-        company: job.company,
-        location: job.location
-      });
-    }
+    return vals;
   }
 
   async function onClick(values: any): Promise<void> {
     try {
       const payload = {
-        jobs,
-        user
+        user,
+        jobs: convertToArray('job'),
+        education: convertToArray('school')        
       }
+
+      console.log(payload);
+
       const resumeOut = (await generateResume({...payload}));
 
       history.push(`/resume/${resumeOut.id}`);
@@ -84,14 +80,26 @@ function MainPage() {
   }
 
   function handleAddJob() {
-    let job: Job;
-    setJobs([...jobs, job]);
+    setNumJobs(numJobs + 1);
   }
 
   function handleDeleteJob(index) {
-    const list = [...jobs];
-    list.splice(index, 1);
-    setJobs(list);
+    const formCopy = formValues;
+    delete formCopy[`job${index}`]
+    setFormValues(formCopy);
+    setNumJobs(numJobs - 1);
+  }
+
+  function handleAddSchool() {
+    setNumSchools(numSchools + 1);
+  }
+
+
+  function handleDeleteSchool(index) {
+    const formCopy = formValues;
+    delete formCopy[`schoolName${index}`]
+    setFormValues(formCopy);
+    setNumSchools(numSchools - 1);
   }
 
   function updateContact(data) {
@@ -115,11 +123,49 @@ function MainPage() {
     }
   }
 
+
   return (
-    <div>
-      <ContactBox 
-        key="testKey"
-        updateForm={(data) => updateContact(data)}/>
+    <>
+    <ContactBox 
+      key="testKey"
+      updateForm={(data) => updateContact(data)}/>
+
+    <BorderBox>
+      <Flex style={{ width: '100%' }}>
+        <Heading size={'md'} alignSelf={'start'} mb={3}>School Info</Heading>
+        <Spacer />
+        <Button size='sm' colorScheme='contrast' onClick={handleAddSchool}>
+            <label htmlFor='addJob'>Add School</label>
+        </Button>
+      </Flex>
+      {[...Array(numSchools).keys()].map((index) => (
+      <>
+      <div className="schoolContainer">
+        <h2 className="heading">School {index + 1}</h2>
+        <CloseButton className="close" size='sm' colorScheme='contrast' onClick={(idx) => handleDeleteSchool(idx)} />
+      </div>
+      <Input
+        id={`schoolname${index}`}
+        borderRadius={0}
+        borderTopRadius={7}
+        placeholder='school name'
+        value={formValues[`schoolname${index}`]}
+        onChange={handleInputChange}
+      />
+      <Input
+        id={`schooldegree${index}`}
+        borderRadius={0}
+        borderTopRadius={7}
+        placeholder='degree'
+        value={formValues[`schooldegree${index}`]}
+        onChange={handleInputChange}
+      />
+      </>
+      )) || ''}
+      </BorderBox>
+
+
+
       <BorderBox >
       <Flex style={{ width: '100%' }}>
         <Heading size={'md'} alignSelf={'start'} mb={3}>
@@ -130,9 +176,9 @@ function MainPage() {
             <label htmlFor='addJob'>Add Job</label>
         </Button>
       </Flex>
-        {jobs.map((x, i) => {
+        {[...Array(numJobs).keys()].map((index) => {
         return (<JobForm 
-          index={i}
+          index={index}
           updateForm={(data, index) => updateJob(data, index)}
           onDecrementJobs={(jobIdx) => handleDeleteJob(jobIdx)}/>)
       })}
@@ -140,8 +186,31 @@ function MainPage() {
       <Button colorScheme='purple' mt={3} size='sm' isLoading={isSubmitting} onClick={onClick}>
         Generate Resume
       </Button>
-    </div>
+    </>
   );
 }
 
 export default MainPage;
+
+
+{/* <input
+id='company'
+borderRadius={0}
+placeholder='company'
+value={company}
+onChange={handleChange}
+/>
+<input
+id='location'
+borderRadius={0}
+placeholder='location'
+value={location}
+onChange={handleChange}
+/>
+<Textarea
+id='responsibilities'
+borderRadius={0}
+placeholder='accomplishments, responsibilities, other notes...'
+value={responsibilities}
+onChange={handleChange}
+/> */}
