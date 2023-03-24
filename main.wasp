@@ -93,14 +93,16 @@ psl=}
 
 entity Job {=psl
   id            String        @id @default(uuid())
-  title         String
-  company       String
-  location      String
+  title         String        @default("")
+  company       String        @default("")
+  location      String        @default("")
   responsibilities  String[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
   resume        Resume?       @relation(fields: [resumeId], references: [id])
   resumeId      String?
+  startYear     Int?
+  endYear       Int?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 psl=}
 
 entity School {=psl
@@ -127,30 +129,30 @@ page MainPage {
   component: import Main from "@client/MainPage"
 }
 
-route CoverLetterPage { path: "/cover-letter/:id", to: CoverLetterPage }
-page CoverLetterPage {
-  component: import { CoverLetter } from "@client/CoverLetter"
-}
+// route CoverLetterPage { path: "/cover-letter/:id", to: CoverLetterPage }
+// page CoverLetterPage {
+//   component: import { CoverLetter } from "@client/CoverLetter"
+// }
 
 route ResumePage { path: "/resume/:id", to: ResumePage }
 page ResumePage {
   component: import { ResumePage } from "@client/ResumePage"
 }
 
-route LoginRoute { path: "/login", to: LoginPage }
-page LoginPage {
-  component: import Login from "@client/LoginPage"
-}
+// route LoginRoute { path: "/login", to: LoginPage }
+// page LoginPage {
+//   component: import Login from "@client/LoginPage"
+// }
 
-route JobsRoute { path: "/jobs", to: JobsPage }
-page JobsPage {
-  component: import Jobs from "@client/JobsPage"
-}
+// route JobsRoute { path: "/jobs", to: JobsPage }
+// page JobsPage {
+//   component: import Jobs from "@client/JobsPage"
+// }
 
-route ProfileRoute { path: "/profile", to: ProfilePage }
-page ProfilePage {
-  component: import Profile from "@client/ProfilePage"
-}
+// route ProfileRoute { path: "/profile", to: ProfilePage }
+// page ProfilePage {
+//   component: import Profile from "@client/ProfilePage"
+// }
 
 /* ⛑ These are the Wasp Operations, which allow the client and server to interact:
  * https://wasp-lang.dev/docs/language/features#queries-and-actions-aka-operations

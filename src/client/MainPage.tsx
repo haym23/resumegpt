@@ -10,7 +10,7 @@ import { useHistory } from 'react-router-dom';
 import { useQuery } from '@wasp/queries';
 import getJob from '@wasp/queries/getJob';
 import React, { useState, useEffect, useRef } from 'react';
-import { CoverLetter, Job, Resume } from '@wasp/entities';
+import { Job, User } from '@wasp/entities';
 import BorderBox from './components/BorderBox';
 import JobForm from './components/JobForm';
 import ContactBox from './components/ContactBox';
@@ -20,10 +20,7 @@ function MainPage() {
   const [jobToFetch, setJobToFetch] = useState<string | null>(null);
   const [isCoverLetterUpdate, setIsCoverLetterUpdate] = useState<boolean>(false);
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [resume, setResume] = useState<Resume>({
-    jobs: [{}],
-    education: [{}],
-  });
+  const [user, setUser] = useState<User>();
 
   const { data: job, isLoading: _ } = useQuery<{ id: string | null }, Job>(
     getJob,
@@ -66,15 +63,18 @@ function MainPage() {
       reset({
         title: job.title,
         company: job.company,
-        location: job.location,
-        description: job.description,
+        location: job.location
       });
     }
   }
 
   async function onClick(values: any): Promise<void> {
     try {
-      const resumeOut = (await generateResume({...resume}));      
+      const payload = {
+        jobs,
+        user
+      }
+      const resumeOut = (await generateResume({...payload}));
 
       history.push(`/resume/${resumeOut.id}`);
     } catch (error) {
@@ -84,7 +84,8 @@ function MainPage() {
   }
 
   function handleAddJob() {
-    setJobs([...jobs, {}]);
+    let job: Job;
+    setJobs([...jobs, job]);
   }
 
   function handleDeleteJob(index) {
@@ -94,43 +95,29 @@ function MainPage() {
   }
 
   function updateContact(data) {
-    setResume({
-      ...resume,
-      user: { ...data }
-    })
+    setUser({ ...data })
   }
 
   function updateJob(data, index) {
-    console.log(data);
-    if (resume.jobs.length === 0) {
-      setResume({
-        ...resume,
-        jobs: [Object.assign({}, resume.jobs[index], data),]
-      });
-    } else if (resume.jobs.length === 1){
-      setResume({
-        ...resume,
-        jobs: [
-          ...resume.jobs.slice(0, index),
-          Object.assign({}, resume.jobs[index], data),
-        ]
-      });
+    if (jobs.length === 0) {
+      setJobs([Object.assign({}, jobs[index], data),]);
+    } else if (jobs.length === 1){
+      setJobs([
+          ...jobs.slice(0, index),
+          Object.assign({}, jobs[index], data),]
+      );
     } else {
-      setResume({
-        ...resume,
-        jobs: [
-          ...resume.jobs.slice(0,index),
-          Object.assign({}, resume.jobs[index], data),
-          ...resume.jobs.slice(index+1)
-        ]
-      });
+      setJobs([
+          ...jobs.slice(0,index),
+          Object.assign({}, jobs[index], data),
+          ...jobs.slice(index+1)
+        ]);
     }
   }
 
   return (
     <div>
       <ContactBox 
-        // ref={contactRef}
         key="testKey"
         updateForm={(data) => updateContact(data)}/>
       <BorderBox >

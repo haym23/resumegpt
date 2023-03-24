@@ -1,6 +1,8 @@
 import HttpError from '@wasp/core/HttpError.js';
-import type { Job, Resume, CoverLetter } from '@wasp/entities';
+import type { Job, CoverLetter } from '@wasp/entities';
 import type { GenerateResume, CreateJob, UpdateJob, UpdateResume, UpdateCoverLetter, GenerateCoverLetter } from '@wasp/actions/types';
+
+import Resume from "./types";
 
 import { ChatGPTAPI } from 'chatgpt';
 
@@ -8,28 +10,26 @@ const api = new ChatGPTAPI({
   apiKey: process.env.OPENAI_API_KEY || ''
 });
 
-const gptConfig = `You are a resume generator.
-You shall be given a personal information about someone including their job history, education and skills.
-You shall generate responses that can be used on a resume.
-You shall write in a modern, professional style.
-Your response shall only contain JSON as plain text, no other text, as to translate easily to a javascript object.
-The JSON response shall contain fields for the following: jobs, education, objective, skills.
-All fields shall be strings unless otherwise specified
+const getPrompt = (resume: Resume) => {
+  const prompt = `
+  Can you extract key information from my resume and return it in a structured format?
+  Here is the resume in JSON format: 
+  ${JSON.stringify(resume)}
+  
+  \n
+  In jobs, the responsibilities field shall contain 2 or 3 full sentences in an array format, comprising of responsibilities an employee might have.
+  In jobs, if a job title is recognized, use the full name of that job title in the value of the JSON output.
+  In jobs, if a company is recognized, use the full name of that company in the value of the JSON output.
+  In addition, based on the information provided, create an "objective" statement relating to the jobs and education given. Include this in the JSON response.
+  In addition, based on the information provided, create a "skills" array that includes the skills gained through the education and work experience provided. Include this in the JSON response.
+  Your reseponse can only by in JSON format, with no other characters.`
+  ;
 
-The jobs field shall contain an array of objects with the following fields: title, location, company, responsibilities.
-The responsibilities field shall contain full sentences in an array format.
+  console.log(prompt);
 
-The education field shall contain an array of objects with the following fields: level, schoolName, startYear (number), endYear (number), major, gpa (number), accomplishments.
-The accomplishments field shall contain full sentences in an array format.
+  return prompt;
+}
 
-The education field shall contain an array of objects with the following fields: level, schoolName, startYear, endYear, major, gpa, accomplishments.
-The accomplishments field shall contain full sentences in an array format.
-
-The skills field shall be an array of strings, containing skills
-
-The objective field shall be a string written by you based on the information above and the information to be provided.
-
-You shall use the following data to generate the JSON responses for the resume:`;
 
 export const generateCoverLetter: GenerateCoverLetter<CoverLetter> = async (
   { content },
@@ -42,10 +42,10 @@ export const generateResume: GenerateResume<Resume> = async (
   context
 ) => {
   try {
-    const response = await api.sendMessage(gptConfig);
+    const response = await api.sendMessage(getPrompt(resume));
     let resumeWithResponse;
     if (response.text.charAt(0) === '`') {
-      resumeWithResponse = JSON.parse(response.text.charAt(0).replace('`', ''))
+      resumeWithResponse = JSON.parse(response.text.charAt(0).replace('`', '').substring(4))
     } else {
       resumeWithResponse = JSON.parse(response.text);
     }
@@ -57,6 +57,7 @@ export const generateResume: GenerateResume<Resume> = async (
         jobs: {create: resumeOut.jobs},
         education: {create: resumeOut.education},
         user: {create: resumeOut.user},
+        skills: resumeOut.skills,
       }
     });
 

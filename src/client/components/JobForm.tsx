@@ -9,12 +9,11 @@ import {
 } from '@chakra-ui/react';
 import React, { useState, useEffect } from 'react';
 
-
 function JobForm({ index, onDecrementJobs, updateForm }) {
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
   const [company, setCompany] = useState('');
-  const [responsibilities, setResponsibilities] = useState('');
+  const [responsibilities, setResponsibilities] = useState([]);
 
 
   function handleChange(event) {
@@ -29,7 +28,7 @@ function JobForm({ index, onDecrementJobs, updateForm }) {
         setLocation(event.target.value);
         break;
       case 'responsibilities':
-        setResponsibilities([event.target.value]);
+        setResponsibilities([event.target.value as string]);
         break;
       default:
         console.log('Unkown target interaction');

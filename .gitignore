@@ -8,3 +8,5 @@ migrations/
 
 # Local Netlify folder
 .netlify
+
+*.toml

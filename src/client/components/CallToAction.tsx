@@ -1,3 +1,4 @@
+import React from 'react';
 import { VStack, HStack, Button, Text, Link, Divider } from "@chakra-ui/react";
 import { FaTwitter, FaCoffee , FaGithub} from "react-icons/fa";
 import api from "@wasp/api"
@@ -36,9 +37,9 @@ export function CallToAction() {
           <Button onClick={clickHandler} leftIcon={<FaCoffee />} size='sm'>
             Buy Me a Coffee
           </Button>
-          <a href='https://twitter.com/hot_town' target='_blank'>
+          <a href='https://twitter.com/haym23' target='_blank'>
             <Button colorScheme='twitter' leftIcon={<FaTwitter />} size='sm'>
-              Follow me @hot_town
+              Follow me @haym23
             </Button>
           </a>
         </HStack>
