@@ -1,7 +1,6 @@
-import React from 'react';
-import { VStack, HStack, Button, Text, Link, Divider } from "@chakra-ui/react";
-import { FaTwitter, FaCoffee , FaGithub} from "react-icons/fa";
-import api from "@wasp/api"
+import { Button, Divider, HStack, Link, Text, VStack } from "@chakra-ui/react";
+import api from "@wasp/api";
+import { FaCoffee, FaGithub, FaTwitter } from "react-icons/fa";
 
 export function CallToAction() {
 
@@ -22,7 +21,7 @@ export function CallToAction() {
             This Project is Open-Source! Check Out the Code on
           </Text>
           <Link
-            href='https://github.com/vincanger/coverlettergpt'
+            href='https://github.com/haym23/resumegpt'
             color='purple.300'
             target='_blank'
             display='grid'
