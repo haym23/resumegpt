@@ -1,4 +1,4 @@
-# CoverLetterGPT.xyz
+# ResumeGPT
 
 ## Running it locally
 
@@ -11,7 +11,7 @@
 
 ## How it works
 
-[coverlettergpt.xyz](http://coverlettergpt.xyz) was built in a couple of days using a few really cool tools:
+_Site coming soon_
 
 - 🐝 [Wasp](https://wasp-lang.dev) - allows you to build full-stack apps with 10x less boilerplate
 - 🎨 [Chakra-ui](https://chakra-ui.com/) - UI components for React that look good and are easy to work with
