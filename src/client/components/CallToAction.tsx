@@ -22,7 +22,7 @@ export function CallToAction() {
             This Project is Open-Source! Check Out the Code on
           </Text>
           <Link
-            href='https://github.com/vincanger/coverlettergpt'
+            href='https://github.com/haym23/resumegpt'
             color='purple.300'
             target='_blank'
             display='grid'

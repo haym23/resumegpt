@@ -62,12 +62,12 @@ function ContactBox({ updateForm }) {
   }, [firstName, lastName, address, phone, emailAddress]);
 
   return (
-    <div>
+    <>
       <BorderBox>
         <Heading size={'md'} alignSelf={'start'} mb={3}>
           Personal Info
         </Heading>
-          <div>
+          <>
             <FormControl>
               <Input
                 id='firstName'
@@ -105,9 +105,9 @@ function ContactBox({ updateForm }) {
                 onChange={handleChange}
               />
             </FormControl>
-          </div>
+          </>
       </BorderBox>
-    </div>
+    </>
   );
 }
 

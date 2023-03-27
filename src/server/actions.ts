@@ -13,6 +13,7 @@ const api = new ChatGPTAPI({
 const getPrompt = (resume: Resume) => {
   const prompt = `
   Can you extract key information from my resume and return it in a structured format?
+  Your reseponse can only by in JSON format, with no other characters or plain text (no notes).
   Here is the resume in JSON format: 
   ${JSON.stringify(resume)}
   
@@ -22,7 +23,7 @@ const getPrompt = (resume: Resume) => {
   In jobs, if a company is recognized, use the full name of that company in the value of the JSON output.
   In addition, based on the information provided, create an "objective" statement relating to the jobs and education given. Include this in the JSON response.
   In addition, based on the information provided, create a "skills" array that includes the skills gained through the education and work experience provided. Include this in the JSON response.
-  Your reseponse can only by in JSON format, with no other characters.`
+  If the resume provided is blank, provide a generic JSON template based on the keys in the input.`
   ;
 
   console.log(prompt);
@@ -41,15 +42,20 @@ export const generateResume: GenerateResume<Resume> = async (
   resume,
   context
 ) => {
+  let response;
   try {
-    const response = await api.sendMessage(getPrompt(resume));
+    response = await api.sendMessage(getPrompt(resume));
+
+    // Find the starting and ending positions of the JSON code
+    const start = response.text.indexOf('{');
+    const end = response.text.lastIndexOf('}');
+
     let resumeWithResponse;
-    if (response.text.charAt(0) === '`') {
-      resumeWithResponse = JSON.parse(response.text.charAt(0).replace('`', '').substring(4))
-    } else {
-      resumeWithResponse = JSON.parse(response.text);
+    if (start !== -1 && end !== -1) {
+      const jsonStr = response.text.substring(start, end + 1)
+      resumeWithResponse = JSON.parse(jsonStr);
     }
-    
+
     const resumeOut = Object.assign(resume, resumeWithResponse);
     const result = await context.entities.Resume.create({
       data: {
@@ -63,6 +69,7 @@ export const generateResume: GenerateResume<Resume> = async (
 
     return result;
   } catch (e) {
+    console.log(response.text);
     console.log(e);
     throw(e);
   }
