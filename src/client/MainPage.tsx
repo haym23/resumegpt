@@ -191,26 +191,3 @@ function MainPage() {
 }
 
 export default MainPage;
-
-
-{/* <input
-id='company'
-borderRadius={0}
-placeholder='company'
-value={company}
-onChange={handleChange}
-/>
-<input
-id='location'
-borderRadius={0}
-placeholder='location'
-value={location}
-onChange={handleChange}
-/>
-<Textarea
-id='responsibilities'
-borderRadius={0}
-placeholder='accomplishments, responsibilities, other notes...'
-value={responsibilities}
-onChange={handleChange}
-/> */}
