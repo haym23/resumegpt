@@ -1,10 +1,3 @@
-import {
-  Tooltip,
-  Button,
-  Textarea,
-  useClipboard,
-  Spinner
-} from "@chakra-ui/react";
 import React from 'react';
 import { match } from "react-router-dom";
 import { useQuery } from "@wasp/queries";
@@ -13,8 +6,8 @@ import getUser from "@wasp/queries/getUser";
 import getJobs from "@wasp/queries/getJobs";
 import getSchools from "@wasp/queries/getSchools";
 import { Resume, User, Job, School } from "@wasp/entities";
-import BorderBox from "./components/BorderBox";
-import './styles/Resume.css';
+import Spinner from "../components/Spinner";
+import '../styles/Resume.css';
 
 export function ResumePage({ match }: { match: match<{ id: string }> }) {
   const id = match.params.id as string;
@@ -36,7 +29,7 @@ export function ResumePage({ match }: { match: match<{ id: string }> }) {
   }
 
   return (
-      <BorderBox>
+      <div className="box-border">
           {isLoadingResume && <Spinner />}
           {(resume) && (
             <div className="container">
@@ -85,7 +78,7 @@ export function ResumePage({ match }: { match: match<{ id: string }> }) {
             </div>
           </div>
         )}
-      </BorderBox>
+      </div>
   );
 }
   

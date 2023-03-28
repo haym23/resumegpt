@@ -1,6 +1,5 @@
 import HttpError from '@wasp/core/HttpError.js';
-import type { Job, CoverLetter } from '@wasp/entities';
-import type { GenerateResume, CreateJob, UpdateJob, UpdateResume, UpdateCoverLetter, GenerateCoverLetter } from '@wasp/actions/types';
+import type { GenerateResume, UpdateResume } from '@wasp/actions/types';
 
 import Resume from "./types";
 
@@ -26,16 +25,7 @@ const getPrompt = (resume: Resume) => {
   If the resume provided is blank, provide a generic JSON template based on the keys in the input.`
   ;
 
-  console.log(prompt);
-
   return prompt;
-}
-
-
-export const generateCoverLetter: GenerateCoverLetter<CoverLetter> = async (
-  { content },
-  context
-) => {
 }
 
 export const generateResume: GenerateResume<Resume> = async (
@@ -57,74 +47,67 @@ export const generateResume: GenerateResume<Resume> = async (
     }
 
     const resumeOut = Object.assign(resume, resumeWithResponse);
+
     const result = await context.entities.Resume.create({
       data: {
-        objective: resumeOut.objective,
-        jobs: {create: resumeOut.jobs},
-        education: {create: resumeOut.education},
-        user: {create: resumeOut.user},
-        skills: resumeOut.skills,
+        ...resumeOut,
+        jobs: {createMany: {data: resumeOut.jobs}},
+        schools: {createMany: {data: resumeOut.schools}},
       }
     });
 
+    console.log('Got result', result);
+
     return result;
   } catch (e) {
-    console.log(response.text);
     console.log(e);
     throw(e);
   }
 };
 
-export type JobPayload = Pick<Job, 'title' | 'company' | 'location'>;
+// export type JobPayload = Pick<Job, 'title' | 'company' | 'location'>;
 
-export const createJob: CreateJob<JobPayload, Job> = ({ title, company, location }, context) => {
-  if (!context.user) {
-    return context.entities.Job.create({
-      data: {
-        title,
-        location,
-        company,
-      },
-    });
-  }
+// export const createJob: CreateJob<JobPayload, Job> = ({ title, company, location }, context) => {
+//   if (!context.user) {
+//     return context.entities.Job.create({
+//       data: {
+//         title,
+//         location,
+//         company,
+//       },
+//     });
+//   }
 
-  return context.entities.Job.create({
-    data: {
-      title,
-      location,
-      company,
-    },
-  });
-};
+//   return context.entities.Job.create({
+//     data: {
+//       title,
+//       location,
+//       company,
+//     },
+//   });
+// };
 
-export type UpdateJobPayload = Pick<Job, 'id' | 'title' | 'company' | 'location'>;
+// export type UpdateJobPayload = Pick<Job, 'id' | 'title' | 'company' | 'location'>;
 
-export const updateJob: UpdateJob<UpdateJobPayload, Job> = (
-  { id, title, company, location },
-  context
-) => {
-  if (!context.user) {
-    throw new HttpError(401);
-  }
+// export const updateJob: UpdateJob<UpdateJobPayload, Job> = (
+//   { id, title, company, location },
+//   context
+// ) => {
+//   if (!context.user) {
+//     throw new HttpError(401);
+//   }
 
-  return context.entities.Job.update({
-    where: {
-      id,
-    },
-    data: {
-      title,
-      location,
-      company,
-    },
-  });
-};
-
-
-export const updateCoverLetter: UpdateCoverLetter<CoverLetter> = async (
-  { content },
-  context
-) => {
-}
+//   return context.entities.Job.update({
+//     where: {
+//       id,
+//     },
+//     data: {
+//       title,
+//       location,
+//       company,
+//     },
+//   });
+// };
 
 export const updateResume: UpdateResume<Resume> = async (
   { id },
