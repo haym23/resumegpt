@@ -1,12 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* reset styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
-  
-/* container styles */
+
 .container {
+  @apply aspect-[3/4] bg-white text-black font-sans px-5 py-2 m-auto md:w-8/12 text-[.8vw];
+}
+
+/* container styles */
+/* .container {
   width: 100%;
   margin: 0 auto;
   padding-top: 2%;
@@ -18,34 +26,24 @@
   line-height: 1.5;
   background-color: white;
   color: black;
+} */
+
+.personalInfoHeader {
+  @apply mb-2 text-center;
 }
 
-/* header styles */
+/* header styles
 .header {
   text-align: center;
   margin-bottom: 2.5%;
-}
+} */
 
 .name {
-  font-size: 1.2vw;
-  font-weight: bold;
-  margin-bottom: 10px;
+  @apply text-2xl font-bold text-center;
 }
 
-.address, .email {
-  margin-bottom: .75%;
-}
-
-.objective {
-  padding-top: 1.5%;
-  padding-bottom: 1.5%;
-}
-
-/* section styles */
-.section-title {
-  font-size: 1.5vw;
-  font-weight: bold;
-  text-align: center;
+.sectionTitle {
+  @apply text-base text-left font-bold;
 }
 
 .section-content {
@@ -53,7 +51,6 @@
   font-size: .5vw;
 }
 
-/* education styles */
 .degree {
   font-size: 1vw;
   display:inline-block;

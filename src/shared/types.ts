@@ -1,5 +1,4 @@
 export interface Job {
-  id: string;
   title: string;
   company: string;
   location: string;
@@ -9,7 +8,6 @@ export interface Job {
 }
 
 export const defaultJob: Job = {
-  id: '',
   title: '',
   company: '',
   location: '',
@@ -19,21 +17,10 @@ export const defaultJob: Job = {
 }
 
 export interface School {
-  id: string;
   name: string;
   location: string;
   startDate: string;
   endDate: string;
   degree: string;
   description: string;
-}
-
-export const defaultSchool: School = {
-  id: '',
-  name: '',
-  location: '',
-  startDate: '',
-  endDate: '',
-  degree: '',
-  description: '',
 }
