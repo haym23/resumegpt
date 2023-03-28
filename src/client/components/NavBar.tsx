@@ -1,148 +1,33 @@
-import {
-  HStack,
-  Heading,
-  Button,
-  Link,
-  Spacer,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Menu,
-  Text,
-  StackProps,
-} from '@chakra-ui/react';
-import { Link as RouterLink } from 'react-router-dom';
-import { CgProfile } from 'react-icons/cg';
-import { MdWorkOutline } from 'react-icons/md';
-import { AiOutlineMenu } from 'react-icons/ai';
-import useAuth from '@wasp/auth/useAuth';
-import { useRef } from 'react';
+import React from 'react';
 
 export default function NavBar() {
-  const { data: user } = useAuth();
-
   return (
-    <HStack
-      as='nav'
-      align='center'
-      justify='center'
-      px={7}
-      py={4}
-      top={0}
-      width='100%'
-      position='sticky'
-      bg='rgba(0, 0, 0, 0.5)'
-      backdropFilter='blur(5px)'
-      borderBottom='sm'
-      borderColor='border-contrast-sm'
-      filter='drop-shadow(0px 0px 2px rgba(255, 255, 255, 0.25))'
-      color='white'
-      zIndex={99}
-    >
-      <HStack width={['md', 'lg', 'xl']} px={1} align='center' justify='space-between'>
-        <Heading size='md'>
-          <Link as={RouterLink} to='/'>
-            ResumeGPT
-          </Link>
-        </Heading>
-        <Spacer />
-        {user ? (
-          <>
-            <NavButton icon={<MdWorkOutline />} to='/jobs'>
-              Jobs Dashboard
-            </NavButton>
-            <Spacer maxW='3px' />
-            <NavButton icon={<CgProfile />} to='/profile'>
-              Profile
-            </NavButton>
-            <MobileButton icon={<AiOutlineMenu />} isUser={true}>
-              Menu
-            </MobileButton>
-          </>
-        ) : (
-          <>
-            <NavButton icon={<CgProfile />} to='/login'>
-              Login
-            </NavButton>
-            <MobileButton icon={<AiOutlineMenu />} isUser={false}>
-              Menu
-            </MobileButton>
-          </>
-        )}
-      </HStack>
-    </HStack>
-  );
-}
-
-interface NavButtonProps extends StackProps {
-  children: React.ReactNode;
-  icon: React.ReactElement;
-  to: string;
-  props?: StackProps;
-}
-
-function NavButton({ children, icon, to, ...props }: NavButtonProps) {
-  const linkRef = useRef<HTMLAnchorElement>(null);
-  function removeFocus() {
-    if (linkRef.current) {
-      linkRef.current.blur();
-    }
-  }
-
-  return (
-    <Link as={RouterLink} to={to} display={['none', 'block']} ref={linkRef} onClick={removeFocus}>
-      <HStack {...props}>
-        {icon}
-        <Text>{children}</Text>
-      </HStack>
-    </Link>
-  );
-}
-
-function MobileButton({
-  children,
-  icon,
-  isUser,
-}: {
-  children: React.ReactNode;
-  icon: React.ReactElement;
-  isUser?: boolean;
-}) {
-  return (
-    <Menu>
-      <MenuButton
-        as={Button}
-        aria-label={children as string}
-        leftIcon={icon}
-        display={['block', 'none']}
-        size='md'
-        border='md'
-        _hover={{
-          border: 'md',
-          borderColor: 'rgba(255, 250, 240, 0.55)',
-          transition: 'all 0.3s ease-in-out',
-        }}
-      >
-        {children}
-      </MenuButton>
-      <MenuList bgColor='gray.900'>
-        {isUser ? (
-          <>
-            <Link as={RouterLink} to={`/jobs`}>
-              <MenuItem>Jobs Dashboard</MenuItem>
-            </Link>
-            <Link as={RouterLink} to={`/profile`}>
-              <MenuItem>Profile</MenuItem>
-            </Link>
-          </>
-        ) : (
-          <>
-            <Link as={RouterLink} to='/login'>
-              <MenuItem>Login</MenuItem> 
-            </Link>
-          </>
-        )}
-      </MenuList>
-    </Menu>
-  );
+    <nav className="flex items-center justify-between flex-wrap bg-teal-500 p-6">
+  <div className="flex items-center flex-shrink-0 text-white mr-6">
+    <svg className="fill-current h-8 w-8 mr-2" width="54" height="54" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg"><path d="M13.5 22.1c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05zM0 38.3c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05z"/></svg>
+    <span className="font-semibold text-xl tracking-tight">ResumeGPT</span>
+  </div>
+  <div className="block lg:hidden">
+    <button className="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
+      <svg className="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+    </button>
+  </div>
+  <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+    <div className="text-sm lg:flex-grow">
+      <a href="/resume" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+        Docs
+      </a>
+      <a href="#responsive-header" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+        Examples
+      </a>
+      <a href="#responsive-header" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white">
+        Blog
+      </a>
+    </div>
+    <div>
+      <a href="#" className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0">Login</a>
+    </div>
+  </div>
+</nav>
+)
 }

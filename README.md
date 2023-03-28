@@ -1,4 +1,4 @@
-# CoverLetterGPT.xyz
+# ResumeGPT.xyz
 
 ## Running it locally
 
@@ -11,7 +11,7 @@
 
 ## How it works
 
-[coverlettergpt.xyz](http://coverlettergpt.xyz) was built in a couple of days using a few really cool tools:
+[resumegpt.xyz](http://resumegpt.xyz) was built in a couple of days using a few really cool tools:
 
 - 🐝 [Wasp](https://wasp-lang.dev) - allows you to build full-stack apps with 10x less boilerplate
 - 🎨 [Chakra-ui](https://chakra-ui.com/) - UI components for React that look good and are easy to work with
@@ -25,5 +25,3 @@ Also, [Chakra-ui](https://chakra-ui.com/) is great for building nice looking UI�
 For more info on the prompts and configuration I used for the [OpenAI](https://openai.com/) API, check out the `src/server/actions.ts` file.
 
 [Stripe](https://stripe.com/) makes the `Buy Me a Coffee` functionality super easy. I just used there `Payment Link` feature and configured it as a donate button
-
-If you have any other questions, feel free to reach out to me on [twitter](https://twitter.com/hot_town)

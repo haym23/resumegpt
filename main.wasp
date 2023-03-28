@@ -35,7 +35,8 @@ app resumegpt {
     ("react-query", "^3.39.2"),
     ("axios", "^0.27.2"),
     ("chatgpt", "^5.0.10"),
-    ("chatgpt-prompts", "^2.0.1")
+    ("chatgpt-prompts", "^2.0.1"),
+    ("eslint", "~7.32.0")
   ],
 }
 
@@ -44,17 +45,16 @@ app resumegpt {
  */
 
 entity User {=psl
-  id          Int     @id @default(autoincrement())
-  username    String?  @unique
-  password    String?
-  letters     CoverLetter[]
-  resumes     Resume[]
+  id            Int     @id @default(autoincrement())
+  username      String  @unique
+  password      String
   firstName     String
   lastName      String
-  address       String?
+  address       String
   phone         Int?
   emailAddress  String
-  externalAuthAssociations  SocialLogin[]
+  // resumes       Resume[]
+  externalAuthAssociations SocialLogin[]
 psl=}
 
 entity SocialLogin {=psl
@@ -67,57 +67,53 @@ entity SocialLogin {=psl
   @@unique([provider, providerId, userId])
 psl=}
 
-entity CoverLetter {=psl
-  id         String     @id @default(uuid())
-  title      String
-  content    String
-  tokenUsage Int
-  user       User?      @relation(fields: [userId], references: [id])
-  userId     Int?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime?  @updatedAt
-psl=}
-
 entity Resume {=psl
-  id          String     @id @default(uuid())
-  jobs        Job[]
-  education   School[]
-  tokenUsage  Int?
-  user        User       @relation(fields: [userId], references: [id])
-  userId      Int
-  objective   String?
-  skills      String[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime?  @updatedAt
-psl=}
-
-entity Job {=psl
-  id            String        @id @default(uuid())
-  title         String        @default("")
-  company       String        @default("")
-  location      String        @default("")
-  responsibilities  String[]
-  resume        Resume?       @relation(fields: [resumeId], references: [id])
-  resumeId      String?
-  startYear     Int?
-  endYear       Int?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id            String     @id @default(uuid())
+  // user          User?      @relation(fields: [userId], references: [id])
+  // userId        Int?
+  firstName     String
+  lastName      String
+  address       String
+  phone         Int?
+  emailAddress  String
+  objective     String?
+  skills        String[]
+  jobCount      Int       @default(0)
+  jobs          Job[]
+  schoolCount   Int       @default(0)
+  schools       School[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime?  @updatedAt
 psl=}
 
 entity School {=psl
-  id            String        @id @default(uuid())
-  schoolName    String
-  startYear     Int
-  endYear       Int
-  gpa           Float
-  level         String
-  major         String?
+  id              String        @id @default(uuid())
+  name            String
+  startYear       Int?
+  endYear         Int?
+  gpa             Float?
+  degree          String
+  major           String?
+  notes           String?
   accomplishments String[]
-  resume        Resume?       @relation(fields: [resumeId], references: [id])
-  resumeId      String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  resume          Resume        @relation(fields: [resumeId], references: [id])
+  resumeId        String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+psl=}
+
+entity Job {=psl
+  id                String        @id @default(uuid())
+  title             String
+  company           String
+  location          String
+  responsibilities  String[]
+  resume            Resume        @relation(fields: [resumeId], references: [id])
+  resumeId          String
+  startYear         Int?
+  endYear           Int?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 psl=}
 
 /* 📡 These are the Wasp Routes (You can protect them easily w/ 'authRequired: true');
@@ -126,17 +122,12 @@ psl=}
 
 route RootRoute { path: "/", to: MainPage }
 page MainPage {
-  component: import Main from "@client/MainPage"
+  component: import Main from "@client/pages/MainPage"
 }
-
-// route CoverLetterPage { path: "/cover-letter/:id", to: CoverLetterPage }
-// page CoverLetterPage {
-//   component: import { CoverLetter } from "@client/CoverLetter"
-// }
 
 route ResumePage { path: "/resume/:id", to: ResumePage }
 page ResumePage {
-  component: import { ResumePage } from "@client/ResumePage"
+  component: import { ResumePage } from "@client/pages/ResumePage"
 }
 
 // route LoginRoute { path: "/login", to: LoginPage }
@@ -158,30 +149,20 @@ page ResumePage {
  * https://wasp-lang.dev/docs/language/features#queries-and-actions-aka-operations
  */
 
-action generateCoverLetter {
-  fn: import { generateCoverLetter } from "@server/actions.js",
-  entities: [CoverLetter]
-}
-
 action generateResume {
   fn: import { generateResume } from "@server/actions.js",
   entities: [Resume]
 }
 
-action createJob {
-  fn: import { createJob } from "@server/actions.js",
-  entities: [Job]
-}
+// action createJob {
+//   fn: import { createJob } from "@server/actions.js",
+//   entities: [Job]
+// }
 
-action updateJob {
-  fn: import { updateJob } from "@server/actions.js",
-  entities: [Job]
-}
-
-action updateCoverLetter {
-  fn: import { updateCoverLetter } from "@server/actions.js",
-  entities: [Job, CoverLetter]
-}
+// action updateJob {
+//   fn: import { updateJob } from "@server/actions.js",
+//   entities: [Job]
+// }
 
 action updateResume {
   fn: import { updateResume } from "@server/actions.js",
@@ -198,27 +179,17 @@ query getSchools {
   entities: [School]
 }
 
-query getJob {
-  fn: import { getJob } from "@server/queries.js",
-  entities: [Job]
-}
+// query getJob {
+//   fn: import { getJob } from "@server/queries.js",
+//   entities: [Job]
+// }
 
 query getUser {
   fn: import { getUser } from "@server/queries.js",
   entities: [User]
 }
 
-query getCoverLetter {
-  fn: import { getCoverLetter } from "@server/queries.js",
-  entities: [CoverLetter]
-}
-
 query getResume {
   fn: import { getResume } from "@server/queries.js",
   entities: [Resume]
-}
-
-query getCoverLetters {
-  fn: import { getCoverLetters } from "@server/queries.js",
-  entities: [CoverLetter]
 }
