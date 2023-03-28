@@ -126,8 +126,3 @@ li {
   border: .1vw solid #333;
   border-radius: .8vw;
 }
-
-  /* Black line */
-hr {
-  border-top: 1vw solid black;
-}

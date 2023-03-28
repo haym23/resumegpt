@@ -78,9 +78,7 @@ entity Resume {=psl
   emailAddress  String
   objective     String?
   skills        String[]
-  jobCount      Int       @default(0)
   jobs          Job[]
-  schoolCount   Int       @default(0)
   schools       School[]
   createdAt     DateTime   @default(now())
   updatedAt     DateTime?  @updatedAt

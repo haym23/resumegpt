@@ -14,7 +14,7 @@
 [resumegpt.xyz](http://resumegpt.xyz) was built in a couple of days using a few really cool tools:
 
 - 🐝 [Wasp](https://wasp-lang.dev) - allows you to build full-stack apps with 10x less boilerplate
-- 🎨 [Chakra-ui](https://chakra-ui.com/) - UI components for React that look good and are easy to work with
+- 🎨 [Tailwind CSS](https://tailwindcss.com/) - CSS Framework for React that looks good and is easy to work with
 - 🤖 [OpenAI](https://openai.com/) - GPT-3.5 turbo API
 - 💸 [Stripe](https://stripe.com/) - for tip payments
 
