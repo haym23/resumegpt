@@ -63,7 +63,7 @@ export function ResumePage({ match }: { match: match<{ id: string }> }) {
                 <span className="job-title">{job.title}</span>
                 <span className="city">{job.location}</span>
                 <span className="employer">{job.company}</span>
-                <span className="date">{job.startYear} - {job.endYear || 'Present'}</span>
+                <span className="date">{job.startDate} - {job.endDate || 'Present'}</span>
                 <ul className="job-description">
                   {job.responsibilities.map((resp: string) => (
                     <li>{resp}</li>
