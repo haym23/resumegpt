@@ -3,7 +3,6 @@ app resumegpt {
     version: "^0.9.0"
   },
   title: "ResumeGPT",
-  // Auth out of the box! https://wasp-lang.dev/docs/language/features#authentication--authorization
   auth: {
     userEntity: User,
     externalAuthEntity: SocialLogin,
@@ -24,7 +23,6 @@ app resumegpt {
   },
   dependencies: [
     ("node-fetch", "3.3.0"),
-    ("@chakra-ui/react", "1.8.8"),
     ("react-icons", "4.8.0"),
     ("@emotion/react", "11.10.6"),
     ("@emotion/styled", "11.10.6"),
@@ -87,17 +85,18 @@ psl=}
 entity School {=psl
   id              String        @id @default(uuid())
   name            String
-  startYear       Int?
-  endYear         Int?
+  startDate       String?
+  endDate         String?
+  location        String?
   gpa             Float?
-  degree          String
+  degree          String?
   major           String?
   notes           String?
   accomplishments String[]
-  resume          Resume        @relation(fields: [resumeId], references: [id])
-  resumeId        String
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  resume          Resume?       @relation(fields: [resumeId], references: [id])
+  resumeId        String?
+  createdAt       DateTime?     @default(now())
+  updatedAt       DateTime?     @updatedAt
 psl=}
 
 entity Job {=psl
@@ -105,11 +104,12 @@ entity Job {=psl
   title             String
   company           String
   location          String
+  notes             String?
   responsibilities  String[]
   resume            Resume        @relation(fields: [resumeId], references: [id])
   resumeId          String
-  startYear         Int?
-  endYear           Int?
+  startDate         String?
+  endDate           String?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 psl=}
@@ -176,11 +176,6 @@ query getSchools {
   fn: import { getSchools } from "@server/queries.js",
   entities: [School]
 }
-
-// query getJob {
-//   fn: import { getJob } from "@server/queries.js",
-//   entities: [Job]
-// }
 
 query getUser {
   fn: import { getUser } from "@server/queries.js",

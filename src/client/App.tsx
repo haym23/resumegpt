@@ -1,3 +1,4 @@
+// @ts-ignore
 import React, { ReactNode } from 'react';
 import NavBar from './components/NavBar';
 

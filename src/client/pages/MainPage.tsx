@@ -1,52 +1,36 @@
+// @ts-ignore
 import React, { useState } from 'react';
 import generateResume from '@wasp/actions/generateResume';
 import { useHistory } from 'react-router-dom';
 import Spinner from '../components/Spinner';
-import { Job, School } from '../../shared/types';
+import { ISchoolPayload, IJobPayload } from '../../shared/types';
 
 import '../styles/Main.css';
 
 function MainPage() {
-  const [formValues, setFormValues] = useState(new Map<string, any>());
-  const [schools, setSchools] = useState<Array<School>>(new Array<School>());
-  const [jobs, setJobs] = useState<Array<Job>>(new Array<Job>());
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [emailAddress, setEmailAddress] = useState('');
+  const [address, setAddress] = useState('');
+  const [schools, setSchools] = useState<Array<ISchoolPayload>>(new Array<ISchoolPayload>());
+  const [jobs, setJobs] = useState<Array<IJobPayload>>(new Array<IJobPayload>());
   const [waitingForResume, setWaitingForResume] = useState(false);
 
-  function handleInputChange(event) {
-    const { id, value } = event.target;
-    setFormValues(new Map(formValues.set(id, value)));
-  }
-
   const history = useHistory();
-
-  function convertToArray(keyPrefix: string) {
-    const vals: any = [];
-    for (const key in formValues) {
-      if (key.includes(keyPrefix)) {
-        const index = Number(key.match('/\+/g'));
-        const field = key.substring(keyPrefix.length).replace(/\d+$/, "")
-
-        vals[index] = {
-          ...vals[index],
-          [field]: formValues[key]
-        };
-      }
-    }
-
-    return vals;
-  }
 
   async function handleSubmit(): Promise<void> {
     try {
       setWaitingForResume(true);
       const payload = {
-        firstName: formValues['firstName'],
-        lastName: formValues['lastName'],
-        emailAddress: formValues['emailAddress'],
-        address: formValues['address'],
+        firstName,
+        lastName,
+        emailAddress,
+        address,
         schools,
         jobs,
       }
+
+      console.log(payload);
 
       const resumeOut = (await generateResume({...payload}));
       history.push(`/resume/${resumeOut.id}`);
@@ -59,51 +43,94 @@ function MainPage() {
   }
 
   const addSchool = () => {
-    const newSchool: School = {
+    const newSchool: ISchoolPayload = {
       name: '',
-      location: '',
-      startDate: '',
-      endDate: '',
       degree: '',
-      description: '',
+      notes: '',
+      gpa: 0,
+      major: '',      
     }
     setSchools([...schools, newSchool]);
   }
 
-  const deleteSchool = (index) => {
+  const deleteSchool = (index: number) => {
     let data = [...schools];
     data.splice(index, 1);
     setSchools(data);
   }
 
-  const handleSchoolsChange = (index, event) => {
-    let data = [...schools];
-    const keyName = event.target.id.substr('school'.length).match(/[a-zA-Z]+/g);
-    data[index][keyName] = event.target.value;
+  const handleSchoolsChange = (index: number, event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
+    const data = [...schools];
+    const keyName: string = event.target.id.substr('school'.length).match(/[a-zA-Z]+/g)?.at(0) || '';
+
+    switch(keyName) {
+      case 'name':
+        data[index].name = event.target.value;
+        break;
+      case 'degree':
+        data[index].degree = event.target.value;
+        break;
+      case 'gpa':
+        data[index].gpa = parseFloat(event.target.value);
+        break;
+      case 'major':
+        data[index].major = event.target.value;
+        break;
+      case 'notes':
+        data[index].notes = event.target.value;
+        break;
+      default:
+        console.log(`Error: Invalid keyName: ${keyName}`);
+        break;
+    }
+
     setSchools(data);
   }
 
   const addJob = () => {
-    let newJob: Job = {
+    let newJob: IJobPayload = {
       title: '',
       company: '',
       location: '',
-      startDate: '',
-      endDate: '',
-      description: '',
+      notes: '',
     };
     setJobs([...jobs, newJob]);
   }
 
-  const deleteJob = (index) => {
+  const deleteJob = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     let data = [...jobs];
     data.splice(index, 1);
     setJobs(data);
   }
 
-  const handleJobsChange = (event, index) => {
+  const handleJobsChange = (index: number, event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
     let data = [...jobs];
-    data[index][event.target.name] = event.target.value;
+    const keyName = event.target.id.substr('job'.length).match(/[a-zA-Z]+/g)?.at(0) || '';
+
+    switch(keyName) {
+      case 'title':
+        data[index].title = event.target.value;
+        break;
+      case 'company':
+        data[index].company = event.target.value;
+        break;
+      case 'location':
+        data[index].location = event.target.value;
+        break;
+      case 'startDate':
+        data[index].startDate = event.target.value;
+        break;
+      case 'endDate':
+        data[index].endDate = event.target.value;
+        break;
+      case 'notes':
+        data[index].notes = event.target.value;
+        break;
+      default:
+        console.log(`Error: Invalid keyName: ${keyName}`);
+        break;
+    }
+
     setJobs(data);
   }
 
@@ -124,8 +151,8 @@ function MainPage() {
             className="formStyle"
             type="text"
             placeholder="First Name"
-            value={formValues['firstName']}
-            onChange={handleInputChange}
+            value={firstName}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setFirstName(event.target.value)}
             required
           />
           <input
@@ -133,8 +160,8 @@ function MainPage() {
             className="formStyle"
             type="text"
             placeholder="Last Name"
-            value={formValues['lastName']}
-            onChange={handleInputChange}
+            value={lastName}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLastName(event.target.value)}
             required
           />
           <label className="formLabel">Email</label>
@@ -142,8 +169,8 @@ function MainPage() {
             id="emailAddress"
             className="formStyle"
             type="email"
-            value={formValues['emailAddress']}
-            onChange={handleInputChange}
+            value={emailAddress}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmailAddress(event.target.value)}
             required
           />
           <label className="formLabel">Address</label>
@@ -151,8 +178,8 @@ function MainPage() {
             id="address"
             className="formStyle"
             type="text"
-            value={formValues['address']}
-            onChange={handleInputChange}
+            value={address}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setAddress(event.target.value)}
             required
           />
         </div>
@@ -161,57 +188,66 @@ function MainPage() {
         <div className="border rounded-md border-gray-500 p-5 w-96 mb-6">
           <div className="whitespace-nowrap flex justify-between">
             <div className="formHeader">School Info</div>
-            <button type="button" className="addButton" onClick={addSchool}>Add School</button>
+            <button type="button" className="addButton bg-slate-800" onClick={addSchool}>Add School</button>
           </div>
-        {schools.map((school, index) => (
-          <div key={index} className="mt-6">
-            <div className="mb-6">
-              <label htmlFor={`schoolname${index}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">School Name</label>
-              <input 
-                type="text" 
-                id={`schoolname${index}`}
-                className="formStyle" 
-                placeholder="Harvard University" 
-                value={school.name}
-                onChange={(event) => handleSchoolsChange(index, event)}
-                required />
-            </div> 
-            <div className="mb-6">
-              <label htmlFor={`schoolmajor${index}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Major</label>
-              <input 
-                type="text"
-                id={`schoolmajor${index}`}
-                className="formStyle"
-                placeholder="Business Administration"
-                value={formValues[`schoolmajor${index}`]}
-                onChange={(event) => handleSchoolsChange(index, event)}
-                required />
-            </div> 
-            <div className="mb-6">
-              <label htmlFor={`schooldegree${index}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Degree Earned/Working Towards</label>
-              <select id={`schooldegree${index}`} className="formStyle" onChange={(event) => handleSchoolsChange(index, event)}>
-                <option>High School Diploma</option>
-                <option>Bachelor's of Science</option>
-                <option>Bachelor's of Arts</option>
-                <option>Masters Degree</option>
-                <option>Doctorate</option>
-                <option>Orange</option>
-              </select>
+          {schools.map((school: ISchoolPayload, index: number) => (
+            <div key={index} className="mt-6">
+              <div className="mb-6">
+                <label htmlFor={`schoolname${index}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">School Name</label>
+                <input 
+                  type="text" 
+                  id={`schoolname${index}`}
+                  className="formStyle" 
+                  placeholder="Harvard University" 
+                  value={school.name}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSchoolsChange(index, event)}
+                  required />
+              </div> 
+              <div className="mb-6">
+                <label htmlFor={`schoolmajor${index}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Major</label>
+                <input 
+                  type="text"
+                  id={`schoolmajor${index}`}
+                  className="formStyle"
+                  placeholder="Business Administration"
+                  value={school.degree}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSchoolsChange(index, event)}
+                  required />
+              </div> 
+              <div className="mb-6">
+                <label htmlFor={`schooldegree${index}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Degree Earned/Working Towards</label>
+                <select id={`schooldegree${index}`} className="formStyle" onChange={(event: React.ChangeEvent<HTMLSelectElement>) => handleSchoolsChange(index, event)}>
+                  <option >High School Diploma</option>
+                  <option>Bachelor's of Science</option>
+                  <option>Bachelor's of Arts</option>
+                  <option>Masters Degree</option>
+                  <option>Doctorate</option>
+                  <option>Orange</option>
+                </select>
+              </div>
+              <div className="my-6">
+                <label htmlFor={`schoolnotes${index}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Notes</label>
+                <textarea 
+                  id={`schoolnotes${index}`}
+                  className="formStyle"
+                  placeholder="Math club, passed organic chemistry, etc."
+                  value={school.notes}
+                  onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => handleSchoolsChange(index, event)}
+                  required />
+              </div>
+              <button type="button" id={`${index}`} className="removeButton bg-slate-800" onClick={() => deleteSchool(index)}>Remove School</button>
             </div>
-            <button type="button" id={index} className="removeButton" onClick={(event) => deleteSchool(event)}>Remove School</button>
-          </div>
-        ))}
+          ))}
         </div>
 
         {/* Job Box */}
         <div className="whitespace-nowrap border rounded-md border-gray-500 p-4 w-96">
           <div className="flex justify-between">
             <div className="formHeader">Job Info</div>
-            <button type="button" className="addButton" onClick={addJob}>Add Job</button>
+            <button type="button" className="addButton bg-slate-800" onClick={addJob}>Add Job</button>
           </div>
-          {jobs.map((job, index) => job && (
+          {jobs.map((job: IJobPayload, index: number) => job && (
           <>
-            
             <div className="my-6">
               <label htmlFor={`jobtitle${index}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Job Title</label>
               <input 
@@ -219,12 +255,12 @@ function MainPage() {
                 id={`jobtitle${index}`}
                 className="formStyle"
                 placeholder="System Administrator"
-                value={job?.title}
-                onChange={(event) => handleJobsChange(index, event)}
+                value={job.title}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleJobsChange(index, event)}
                 required />
             </div>
             <div className="mb-6">
-              <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email address</label>
+              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Company Name</label>
               <input 
                 type="text" 
                 id={`jobcompany${index}`}
@@ -233,38 +269,45 @@ function MainPage() {
                 required />
             </div>
             <div className="grid gap-6 mb-6 md:grid-cols-2">
-              <div>
-                <label htmlFor="company" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Company</label>
-                <input 
-                  type="number" 
-                  id={`jobstartyear${index}`}
-                  className="formStyle" 
-                  placeholder="2019"
-                  value={job?.startYear}
-                  onChange={(event) => handleJobsChange(index, event)}
+            <div>
+                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white placeholder-gray-400">Start Date</label>
+                <input
+                  type="date" 
+                  id={`jobstartDate${index}`}
+                  className="formStyle"
+                  value={job.startDate}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleJobsChange(index, event)}
                   required />
               </div>
               <div>
-                <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Phone number</label>
-                <input type="tel" id="phone" className="formStyle" placeholder="123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required />
-              </div>
-              <div>
-                <label htmlFor="website" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Website URL</label>
-                <input type="url" id="website" className="formStyle" placeholder="flowbite.com" required />
-              </div>
-              <div>
-                <label htmlFor="visitors" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Unique visitors (per month)</label>
-                <input type="number" id="visitors" className="formStyle" placeholder="" required />
+                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white placeholder-gray-400">End Date</label>
+                <input 
+                  type="date" 
+                  id={`jobendDate${index}`}
+                  className="formStyle" 
+                  value={job.endDate}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleJobsChange(index, event)}
+                  required />
               </div>
             </div>
-            <button type="button" className="removeButton" onClick={deleteJob}>Remove Job</button>
+            <div className="my-6">
+              <label htmlFor={`jobnotes${index}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Notes</label>
+              <textarea 
+                id={`jobnotes${index}`}
+                className="formStyle"
+                placeholder="Leader on team, project development, etc."
+                value={job?.notes}
+                onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => handleJobsChange(index, event)}
+                required />
+            </div>
+            <button type="button" className="removeButton bg-slate-800" onClick={(e) => deleteJob(e, index)}>Remove Job</button>
           </>
         ))}
         </div>
 
         {/* Generate button */}
         <div className="flex justify-center items-center">
-          <button type="submit" className="submitButton">
+          <button type="submit" className="submitButton bg-slate-800">
             Generate Resume
           </button>
         </div>

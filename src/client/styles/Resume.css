@@ -10,33 +10,12 @@
   }
 
 .container {
-  @apply aspect-[3/4] bg-white text-black font-sans px-5 py-2 m-auto md:w-8/12 text-[.8vw];
+  @apply aspect-[3/4] bg-white text-black font-sans px-5 py-2 m-auto md:w-8/12 text-[1vw];
 }
-
-/* container styles */
-/* .container {
-  width: 100%;
-  margin: 0 auto;
-  padding-top: 2%;
-  padding-left: 5%;
-  padding-right: 5%;
-  padding-bottom: 34.33%;
-  font-family: Arial, sans-serif;
-  font-size: .8vw;
-  line-height: 1.5;
-  background-color: white;
-  color: black;
-} */
 
 .personalInfoHeader {
   @apply mb-2 text-center;
 }
-
-/* header styles
-.header {
-  text-align: center;
-  margin-bottom: 2.5%;
-} */
 
 .name {
   @apply text-2xl font-bold text-center;

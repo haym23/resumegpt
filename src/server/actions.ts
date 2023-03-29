@@ -1,7 +1,6 @@
 import HttpError from '@wasp/core/HttpError.js';
 import type { GenerateResume, UpdateResume } from '@wasp/actions/types';
-
-import Resume from "./types";
+import type { Resume, Job, School } from '@wasp/entities';
 
 import { ChatGPTAPI } from 'chatgpt';
 
@@ -9,7 +8,12 @@ const api = new ChatGPTAPI({
   apiKey: process.env.OPENAI_API_KEY || ''
 });
 
-const getPrompt = (resume: Resume) => {
+type ResumePayload = Resume & {
+  jobs: Pick<Job, 'title' | 'company' | 'location'>[];
+  schools: Pick<School, 'name' | 'degree' | 'major' | 'gpa' | 'startDate' | 'endDate' | 'notes'>[];
+};
+
+const getPrompt = (resume: ResumePayload) => {
   const prompt = `
   Can you extract key information from my resume and return it in a structured format?
   Your reseponse can only by in JSON format, with no other characters or plain text (no notes).
@@ -28,7 +32,7 @@ const getPrompt = (resume: Resume) => {
   return prompt;
 }
 
-export const generateResume: GenerateResume<Resume> = async (
+export const generateResume: GenerateResume<ResumePayload, Resume> = async (
   resume,
   context
 ) => {
@@ -40,19 +44,23 @@ export const generateResume: GenerateResume<Resume> = async (
     const start = response.text.indexOf('{');
     const end = response.text.lastIndexOf('}');
 
-    let resumeWithResponse;
+    let resumeWithResponse: ResumePayload;
     if (start !== -1 && end !== -1) {
       const jsonStr = response.text.substring(start, end + 1)
       resumeWithResponse = JSON.parse(jsonStr);
+    } else {
+      throw new Error('Could not parse JSON response');
     }
 
     const resumeOut = Object.assign(resume, resumeWithResponse);
 
+    console.log('Got resume', resumeOut);
+
     const result = await context.entities.Resume.create({
       data: {
         ...resumeOut,
-        jobs: {createMany: {data: resumeOut.jobs}},
-        schools: {createMany: {data: resumeOut.schools}},
+        jobs: {createMany: {data: resumeOut.jobs as Job[]}},
+        schools: {createMany: {data: resumeOut.schools as School[]}},
       }
     });
 
