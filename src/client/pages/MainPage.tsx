@@ -210,7 +210,7 @@ function MainPage() {
                   id={`schoolmajor${index}`}
                   className="formStyle"
                   placeholder="Business Administration"
-                  value={school.degree}
+                  value={school.major}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSchoolsChange(index, event)}
                   required />
               </div> 
@@ -266,6 +266,8 @@ function MainPage() {
                 id={`jobcompany${index}`}
                 className="formStyle" 
                 placeholder="JP Morgan Chase"
+                value={job.company}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleJobsChange(index, event)}
                 required />
             </div>
             <div className="grid gap-6 mb-6 md:grid-cols-2">

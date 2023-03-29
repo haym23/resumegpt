@@ -9,7 +9,7 @@ const api = new ChatGPTAPI({
 });
 
 type ResumePayload = Resume & {
-  jobs: Pick<Job, 'title' | 'company' | 'location'>[];
+  jobs: Pick<Job, 'title'>[];
   schools: Pick<School, 'name' | 'degree' | 'major' | 'gpa' | 'startDate' | 'endDate' | 'notes'>[];
 };
 
@@ -21,6 +21,12 @@ const getPrompt = (resume: ResumePayload) => {
   ${JSON.stringify(resume)}
   
   \n
+  In schools, using the notes, create an accomplishments field in the JSON response.
+  In schools, the accomplishments field shall contain 2 or 3 full sentences in an array format, comprising of responsibilities an employee might have.
+  In schools, if a school name is recognized, use the full name of that school in the value of the JSON output.
+  In schools, if a major is recognized, use the full name of that major in the value of the JSON output.
+
+  In jobs, using the notes, create an responsibilities field in the JSON response.
   In jobs, the responsibilities field shall contain 2 or 3 full sentences in an array format, comprising of responsibilities an employee might have.
   In jobs, if a job title is recognized, use the full name of that job title in the value of the JSON output.
   In jobs, if a company is recognized, use the full name of that company in the value of the JSON output.
