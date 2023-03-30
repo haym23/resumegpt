@@ -1,5 +1,6 @@
 // @ts-ignore
 import React from 'react';
+// @ts-ignore
 import { match } from "react-router-dom";
 import { useQuery } from "@wasp/queries";
 import getResume from "@wasp/queries/getResume";

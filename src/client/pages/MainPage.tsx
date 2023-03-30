@@ -1,7 +1,8 @@
 // @ts-ignore
 import React, { useState } from 'react';
-import generateResume from '@wasp/actions/generateResume';
+// @ts-ignore
 import { useHistory } from 'react-router-dom';
+import generateResume from '@wasp/actions/generateResume';
 import Spinner from '../components/Spinner';
 import { ISchoolPayload, IJobPayload } from '../../shared/types';
 
@@ -302,7 +303,7 @@ function MainPage() {
                 onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => handleJobsChange(index, event)}
                 required />
             </div>
-            <button type="button" className="removeButton bg-slate-800" onClick={(e) => deleteJob(e, index)}>Remove Job</button>
+            <button type="button" className="removeButton bg-slate-800" onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => deleteJob(e, index)}>Remove Job</button>
           </>
         ))}
         </div>
