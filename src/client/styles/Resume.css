@@ -1,133 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* reset styles */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-/* container styles */
-.container {
-  width: 100%;
-  margin: 0 auto;
-  padding-top: 2%;
-  padding-left: 5%;
-  padding-right: 5%;
-  padding-bottom: 34.33%;
-  font-family: Arial, sans-serif;
-  font-size: .8vw;
-  line-height: 1.5;
-  background-color: white;
-  color: black;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* header styles */
-.header {
-  text-align: center;
-  margin-bottom: 2.5%;
+:root {
+  font-family: 'Calibri', 'Arial';
+  font-size: 14px;
+  line-height: 1.6rem;
+  text-align: justify;
 }
 
-.name {
-  font-size: 1.2vw;
-  font-weight: bold;
-  margin-bottom: 10px;
+a {
+  text-decoration: none;
+  color: initial;
 }
 
-.address, .email {
-  margin-bottom: .75%;
+p,
+ul {
+  font-weight: 200;
 }
 
-.objective {
-  padding-top: 1.5%;
-  padding-bottom: 1.5%;
+.paper {
+  width: 1050px;
 }
 
-/* section styles */
-.section-title {
-  font-size: 1.5vw;
-  font-weight: bold;
-  text-align: center;
+.h-full {
+  height: 100%;
 }
 
-.section-content {
-  margin-bottom: 2.5%;
-  font-size: .5vw;
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* education styles */
-.degree {
-  font-size: 1vw;
-  display:inline-block;
+.mx-1 {
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
-.school {
-  font-size: 1vw;
-  font-weight: bold;
-  margin-bottom: 5px;
-  text-align: left;
-  display:inline-block;
+.ml-auto {
+  margin-left: auto;
 }
 
-.date {
-  font-size: .8vw;
-  font-weight: normal;
-  text-align: right;
-  float:right;
+.mt-half {
+  margin-top: 0.5rem;
 }
 
-.city {
-  font-size: .8vw;
-  font-weight: normal;
-  text-align: right;
-  float:right;
+.mt-1 {
+  margin-top: 1rem;
 }
 
-.coursework {
-  font-style: italic;
+.ml-2 {
+  margin-left: 2rem;
 }
 
-/* experience styles */
-.job-title {
-  font-size: 1vw;
-  font-weight: bold;
+.ml-3 {
+  margin-left: 3rem;
 }
 
-.employer {
-  font-size: 1vw;
+.p-3 {
+  padding: 3rem;
 }
 
-.job-description {
-  margin-left: 1.5%;
-  margin-bottom: .75%;
-  padding-left: 3%;
-  padding-top: .75%;
+.border-solid {
+  border-style: solid;
 }
 
-.job-description li {
-  list-style: disc;
-  margin-bottom: .75%;
+.border-1 {
+  border-width: 1;
 }
 
-/* skills styles */
-.skills-list {
-  list-style: none;
+.shadow-md {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.flex {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
-li {
-  font-size: .8vw;
+.inline-block {
+  display: inline-block;
 }
 
-.skills-list li {
-  font-size: 1vw;
-  margin: .3vw;
-  padding: .1vw .9vw;
-  border: .1vw solid #333;
-  border-radius: .8vw;
+.text-center {
+  text-align: center;
 }
 
-  /* Black line */
-hr {
-  border-top: 1vw solid black;
+.text-left {
+  text-align: left;
+}
+
+.text-muted {
+  color: #aaa;
+}
+
+@page {
+  size: letter;
+  margin: 0;
+}
+
+@media (max-width: 1050px) {
+  .paper {
+    width: 100%;
+    min-width: 800px;
+  }
 }

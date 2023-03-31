@@ -1,7 +1,6 @@
 import HttpError from '@wasp/core/HttpError.js';
 import type { GenerateResume, UpdateResume } from '@wasp/actions/types';
-
-import Resume from "./types";
+import type { Resume, Job, School } from '@wasp/entities';
 
 import { ChatGPTAPI } from 'chatgpt';
 
@@ -9,14 +8,28 @@ const api = new ChatGPTAPI({
   apiKey: process.env.OPENAI_API_KEY || ''
 });
 
-const getPrompt = (resume: Resume) => {
+type ResumePayload = Resume & {
+  jobs: Pick<Job, 'title'>[];
+  schools: Pick<School, 'name' | 'degree' | 'major' | 'gpa' | 'startDate' | 'endDate' | 'notes'>[];
+};
+
+const getPrompt = (resume: ResumePayload) => {
   const prompt = `
   Can you extract key information from my resume and return it in a structured format?
   Your reseponse can only by in JSON format, with no other characters or plain text (no notes).
   Here is the resume in JSON format: 
-  ${JSON.stringify(resume)}
+  ${JSON.stringify({
+    jobs: resume.jobs,
+    schools: resume.schools,
+  })}
   
   \n
+  In schools, using the notes, create an accomplishments field in the JSON response.
+  In schools, the accomplishments field shall contain 2 or 3 full sentences in an array format, comprising of responsibilities an employee might have.
+  In schools, if a school name is recognized, use the full name of that school in the value of the JSON output.
+  In schools, if a major is recognized, use the full name of that major in the value of the JSON output.
+
+  In jobs, using the notes, create an responsibilities field in the JSON response.
   In jobs, the responsibilities field shall contain 2 or 3 full sentences in an array format, comprising of responsibilities an employee might have.
   In jobs, if a job title is recognized, use the full name of that job title in the value of the JSON output.
   In jobs, if a company is recognized, use the full name of that company in the value of the JSON output.
@@ -28,7 +41,7 @@ const getPrompt = (resume: Resume) => {
   return prompt;
 }
 
-export const generateResume: GenerateResume<Resume> = async (
+export const generateResume: GenerateResume<ResumePayload, Resume> = async (
   resume,
   context
 ) => {
@@ -40,10 +53,12 @@ export const generateResume: GenerateResume<Resume> = async (
     const start = response.text.indexOf('{');
     const end = response.text.lastIndexOf('}');
 
-    let resumeWithResponse;
+    let resumeWithResponse: ResumePayload;
     if (start !== -1 && end !== -1) {
       const jsonStr = response.text.substring(start, end + 1)
       resumeWithResponse = JSON.parse(jsonStr);
+    } else {
+      throw new Error('Could not parse JSON response');
     }
 
     const resumeOut = Object.assign(resume, resumeWithResponse);
@@ -51,12 +66,10 @@ export const generateResume: GenerateResume<Resume> = async (
     const result = await context.entities.Resume.create({
       data: {
         ...resumeOut,
-        jobs: {createMany: {data: resumeOut.jobs}},
-        schools: {createMany: {data: resumeOut.schools}},
+        jobs: {createMany: {data: resumeOut.jobs as Job[]}},
+        schools: {createMany: {data: resumeOut.schools as School[]}},
       }
     });
-
-    console.log('Got result', result);
 
     return result;
   } catch (e) {

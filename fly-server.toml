@@ -1,9 +1,9 @@
-# fly.toml file generated for resumegpt-server on 2023-03-23T17:28:40-04:00
+# fly.toml file generated for resumegpt-server on 2023-03-29T19:31:09-04:00
 
 app = "resumegpt-server"
 kill_signal = "SIGINT"
 kill_timeout = 5
-primary_region = "mia"
+primary_region = "iad"
 processes = []
 
 [env]

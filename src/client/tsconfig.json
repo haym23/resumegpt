@@ -37,7 +37,8 @@
         // ... If that fails, try to find it inside definitely-typed type
         // definitions.
         "node_modules/@types/*"
-      ]
+      ],
+      "src/*": ["./src/*"]
     },
     // Correctly resolve types: https://www.typescriptlang.org/tsconfig#typeRoots
     "typeRoots": [
