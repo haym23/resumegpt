@@ -4,101 +4,110 @@
 
 /* reset styles */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-.container {
-  @apply aspect-[3/4] bg-white text-black font-sans px-5 py-2 m-auto md:w-8/12 text-[1vw];
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.personalInfoHeader {
-  @apply mb-2 text-center;
+:root {
+  font-family: 'Calibri', 'Arial';
+  font-size: 14px;
+  line-height: 1.6rem;
+  text-align: justify;
 }
 
-.name {
-  @apply text-2xl font-bold text-center;
+a {
+  text-decoration: none;
+  color: initial;
 }
 
-.sectionTitle {
-  @apply text-base text-left font-bold;
+p,
+ul {
+  font-weight: 200;
 }
 
-.section-content {
-  margin-bottom: 2.5%;
-  font-size: .5vw;
+.paper {
+  width: 1050px;
 }
 
-.degree {
-  font-size: 1vw;
-  display:inline-block;
+.h-full {
+  height: 100%;
 }
 
-.school {
-  font-size: 1vw;
-  font-weight: bold;
-  margin-bottom: 5px;
-  text-align: left;
-  display:inline-block;
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.date {
-  font-size: .8vw;
-  font-weight: normal;
-  text-align: right;
-  float:right;
+.mx-1 {
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
-.city {
-  font-size: .8vw;
-  font-weight: normal;
-  text-align: right;
-  float:right;
+.ml-auto {
+  margin-left: auto;
 }
 
-.coursework {
-  font-style: italic;
+.mt-half {
+  margin-top: 0.5rem;
 }
 
-/* experience styles */
-.job-title {
-  font-size: 1vw;
-  font-weight: bold;
+.mt-1 {
+  margin-top: 1rem;
 }
 
-.employer {
-  font-size: 1vw;
+.ml-2 {
+  margin-left: 2rem;
 }
 
-.job-description {
-  margin-left: 1.5%;
-  margin-bottom: .75%;
-  padding-left: 3%;
-  padding-top: .75%;
+.ml-3 {
+  margin-left: 3rem;
 }
 
-.job-description li {
-  list-style: disc;
-  margin-bottom: .75%;
+.p-3 {
+  padding: 3rem;
 }
 
-/* skills styles */
-.skills-list {
-  list-style: none;
+.border-solid {
+  border-style: solid;
+}
+
+.border-1 {
+  border-width: 1;
+}
+
+.shadow-md {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.flex {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
-li {
-  font-size: .8vw;
+.inline-block {
+  display: inline-block;
 }
 
-.skills-list li {
-  font-size: 1vw;
-  margin: .3vw;
-  padding: .1vw .9vw;
-  border: .1vw solid #333;
-  border-radius: .8vw;
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-muted {
+  color: #aaa;
+}
+
+@page {
+  size: letter;
+  margin: 0;
+}
+
+@media (max-width: 1050px) {
+  .paper {
+    width: 100%;
+    min-width: 800px;
+  }
 }

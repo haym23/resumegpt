@@ -18,7 +18,10 @@ const getPrompt = (resume: ResumePayload) => {
   Can you extract key information from my resume and return it in a structured format?
   Your reseponse can only by in JSON format, with no other characters or plain text (no notes).
   Here is the resume in JSON format: 
-  ${JSON.stringify(resume)}
+  ${JSON.stringify({
+    jobs: resume.jobs,
+    schools: resume.schools,
+  })}
   
   \n
   In schools, using the notes, create an accomplishments field in the JSON response.
@@ -60,8 +63,6 @@ export const generateResume: GenerateResume<ResumePayload, Resume> = async (
 
     const resumeOut = Object.assign(resume, resumeWithResponse);
 
-    console.log('Got resume', resumeOut);
-
     const result = await context.entities.Resume.create({
       data: {
         ...resumeOut,
@@ -69,8 +70,6 @@ export const generateResume: GenerateResume<ResumePayload, Resume> = async (
         schools: {createMany: {data: resumeOut.schools as School[]}},
       }
     });
-
-    console.log('Got result', result);
 
     return result;
   } catch (e) {

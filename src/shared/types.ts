@@ -15,6 +15,7 @@ export interface IJobPayload {
   startDate?: string;
   endDate?: string;
   notes?: string;
+  responsibilities: string[];
 }
 
 export interface IResumePayload {
