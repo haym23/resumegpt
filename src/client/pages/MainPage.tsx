@@ -94,6 +94,7 @@ function MainPage() {
       company: '',
       location: '',
       notes: '',
+      responsibilities: [],
     };
     setJobs([...jobs, newJob]);
   }
@@ -219,11 +220,10 @@ function MainPage() {
                 <label htmlFor={`schooldegree${index}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Degree Earned/Working Towards</label>
                 <select id={`schooldegree${index}`} className="formStyle" onChange={(event: React.ChangeEvent<HTMLSelectElement>) => handleSchoolsChange(index, event)}>
                   <option >High School Diploma</option>
-                  <option>Bachelor's of Science</option>
-                  <option>Bachelor's of Arts</option>
+                  <option>Bachelor of Science</option>
+                  <option>Bachelor of Arts</option>
                   <option>Masters Degree</option>
                   <option>Doctorate</option>
-                  <option>Orange</option>
                 </select>
               </div>
               <div className="my-6">

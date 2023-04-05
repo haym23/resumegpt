@@ -11,10 +11,10 @@ export const Skills = ({ skills }: SkillsProps) => {
   return (
     <SectionWrapper title="Skills">
       {skills.map((skill) => (
-        <p className="inline-block">
-          <span className="mx-1">•</span>
+        <div className="leading-5 inline-block text-xs sm:text-sm md:text-base">
+          <span className="text-2xs sm:text-sm mx-0.5 sm:mx-1">•</span>
           <span>{skill}</span>
-        </p>
+        </div>
       ))}
     </SectionWrapper>
   );

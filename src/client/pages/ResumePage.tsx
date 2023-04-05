@@ -19,14 +19,14 @@ export function ResumePage({ match }: { match: match<{ id: string }> }) {
   const { data: schools } = useQuery<{ resumeId: string }, ISchoolPayload[]>(getSchools, { resumeId: resume?.id || '' });
 
   return (
-      <div key="resume" className="flex justify-center">
+      <div key="resume" className="object-contain max-h-full flex justify-center ">
         {isLoadingResume && <Spinner />}
         {resume && jobs && schools && (
-        <div className="aspect-[3/4] container box-border border-4 border-50-black rounded-lg w-full bg-white paper mx-auto p-3 my-4">
+        <div className="resume aspect-[3/4] container box-border border-4 border-50-black rounded-lg bg-white mx-auto p-1.5 sm:p-3 my-4">
           <ContactInfo firstName={resume.firstName} lastName={resume.lastName} email={resume.emailAddress} address={resume.address}/>
           <Summary summary={resume.objective || 'Fill summary here'}/>
-          <Jobs jobs={jobs} />
           <Schools schools={schools}/>
+          <Jobs jobs={jobs} />
           <Skills skills={resume.skills}/>
         </div>
         )}

@@ -9,9 +9,8 @@
   box-sizing: border-box;
 }
 
-:root {
+.resume {
   font-family: 'Calibri', 'Arial';
-  font-size: 14px;
   line-height: 1.6rem;
   text-align: justify;
 }
@@ -24,10 +23,6 @@ a {
 p,
 ul {
   font-weight: 200;
-}
-
-.paper {
-  width: 1050px;
 }
 
 .h-full {

@@ -10,9 +10,9 @@ interface SectionWrapperProps extends PropsWithChildren<{
 
 export const SectionWrapper = ({ children, title }: SectionWrapperProps) => (
   <>
-    <div className="text-2xl font-bold mt-1">{title}</div>
+    <div className="sm:text-xl md:text-2xl lg:text-4xl font-bold mt-1">{title}</div>
     <hr className="border-solid border-1" />
 
-    <div className="mt-half">{children}</div>
+    <div className="mt-[0.0825rem] sm:mt-half">{children}</div>
   </>
 );

@@ -15,25 +15,26 @@ export const ContactInfo = (props: ContactInfoProps) => {
 
   return (
     <div className="text-center">
-      <div className="text-4xl font-bold">{props.firstName} {props.lastName}</div>
+      <div className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-bold">{props.firstName} {props.lastName}</div>
 
       <h2>contactInfo.title</h2>
 
-      <a href={`mailto:${props.email}`}>{props.email}</a>
+      <div className="text-xs sm:text-sm md:text-base lg:text-lg">
+        <a href={`mailto:${props.email}`}>{props.email}</a>
+        {true && (
+          <>
+            <span className="text-2xs sm:text-sm mx-0.5 sm:mx-1">•</span>
+            <a href="{config.contactInfo.firstLink}">{cleanLink("config.contactInfo.firstLink")}</a>
+          </>
+        )}
 
-      {true && (
-        <>
-          <span className="mx-1">•</span>
-          <a href="{config.contactInfo.firstLink}">{cleanLink("config.contactInfo.firstLink")}</a>
-        </>
-      )}
-
-      {true && (
-        <>
-          <span className="mx-1">•</span>
-          <a href={"config.contactInfo.secondLink"}>{cleanLink("config.contactInfo.secondLink")}</a>
-        </>
-      )}
+        {true && (
+          <>
+            <span className="text-2xs sm:text-sm mx-0.5 sm:mx-1">•</span>
+            <a href={"config.contactInfo.secondLink"}>{cleanLink("config.contactInfo.secondLink")}</a>
+          </>
+        )}
+      </div>
     </div>
   );
 };

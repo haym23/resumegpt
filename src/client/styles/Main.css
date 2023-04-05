@@ -31,10 +31,9 @@
 }
 
 .addButton {
-  @apply text-white text-center bg-slate-700 font-medium rounded-lg text-sm w-full px-5 py-2.5 
-    hover:bg-teal-800 
+  @apply text-white text-center bg-slate-700 font-medium rounded-lg text-sm px-5 py-2.5 m-1
+    hover:bg-teal-800
     focus:ring-4 focus:outline-none focus:ring-red-300 
-    sm:w-auto 
     dark:bg-slate-500 dark:hover:bg-teal-700 dark:focus:ring-slate-800
     transition ease-in-out duration-200;   
 }
