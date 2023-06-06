@@ -1,11 +1,13 @@
 export interface ISchoolPayload {
   name: string;
+  location: string;
   degree: string;
   major?: string;
   gpa: number;
   startDate?: string;
   endDate?: string;
   notes?: string;
+  accomplishments: string[];
 }
 
 export interface IJobPayload {

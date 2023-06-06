@@ -7,7 +7,10 @@ app resumegpt {
     userEntity: User,
     externalAuthEntity: SocialLogin,
     methods: {
-      google: {},
+      google: {
+        getUserFieldsFn: import { getUserFields } from "@server/auth.js",
+        configFn: import { config } from "@server/auth.js",
+      },
     },
     onAuthFailedRedirectTo: "/",
   },
@@ -34,7 +37,8 @@ app resumegpt {
     ("axios", "^0.27.2"),
     ("chatgpt", "^5.0.10"),
     ("chatgpt-prompts", "^2.0.1"),
-    ("eslint", "~7.32.0")
+    ("eslint", "~7.32.0"),
+    ("html2pdf.js", "~0.9.0")
   ],
 }
 
@@ -46,12 +50,8 @@ entity User {=psl
   id            Int     @id @default(autoincrement())
   username      String  @unique
   password      String
-  firstName     String
-  lastName      String
-  address       String
-  phone         Int?
-  emailAddress  String
-  // resumes       Resume[]
+  email         String
+  resume        Resume?
   externalAuthAssociations SocialLogin[]
 psl=}
 
@@ -67,13 +67,11 @@ psl=}
 
 entity Resume {=psl
   id            String     @id @default(uuid())
-  // user          User?      @relation(fields: [userId], references: [id])
-  // userId        Int?
+  user          User       @relation(fields: [userId], references: [id])
+  userId        Int        @unique
   firstName     String
   lastName      String
-  address       String
-  phone         Int?
-  emailAddress  String
+  phone         String
   objective     String?
   skills        String[]
   jobs          Job[]
@@ -128,20 +126,10 @@ page ResumePage {
   component: import { ResumePage } from "@client/pages/ResumePage"
 }
 
-// route LoginRoute { path: "/login", to: LoginPage }
-// page LoginPage {
-//   component: import Login from "@client/LoginPage"
-// }
-
-// route JobsRoute { path: "/jobs", to: JobsPage }
-// page JobsPage {
-//   component: import Jobs from "@client/JobsPage"
-// }
-
-// route ProfileRoute { path: "/profile", to: ProfilePage }
-// page ProfilePage {
-//   component: import Profile from "@client/ProfilePage"
-// }
+route LoginPage { path: "/login", to: LoginPage }
+page LoginPage {
+  component: import { LoginPage } from "@client/pages/LoginPage"
+}
 
 /* ⛑ These are the Wasp Operations, which allow the client and server to interact:
  * https://wasp-lang.dev/docs/language/features#queries-and-actions-aka-operations
@@ -151,16 +139,6 @@ action generateResume {
   fn: import { generateResume } from "@server/actions.js",
   entities: [Resume]
 }
-
-// action createJob {
-//   fn: import { createJob } from "@server/actions.js",
-//   entities: [Job]
-// }
-
-// action updateJob {
-//   fn: import { updateJob } from "@server/actions.js",
-//   entities: [Job]
-// }
 
 action updateResume {
   fn: import { updateResume } from "@server/actions.js",

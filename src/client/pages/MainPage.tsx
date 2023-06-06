@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 // @ts-ignore
 import { useHistory } from 'react-router-dom';
 import generateResume from '@wasp/actions/generateResume';
+import useAuth from '@wasp/auth/useAuth';
 import Spinner from '../components/Spinner';
 import { ISchoolPayload, IJobPayload } from '../../shared/types';
 
@@ -12,12 +13,33 @@ function MainPage() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
-  const [address, setAddress] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [schools, setSchools] = useState<Array<ISchoolPayload>>(new Array<ISchoolPayload>());
   const [jobs, setJobs] = useState<Array<IJobPayload>>(new Array<IJobPayload>());
   const [waitingForResume, setWaitingForResume] = useState(false);
 
   const history = useHistory();
+
+  const { data: user, isLoading: isUserLoading } = useAuth();
+
+  const formatPhoneNumber = (): string => {
+    // Remove all non-digit characters from the input
+    const digitsOnly = phoneNumber.replace(/\D/g, '');
+
+    // Format the phone number
+    let formattedNumber = '';
+    if (digitsOnly.length >= 3) {
+      formattedNumber += `(${digitsOnly.slice(0, 3)})`;
+    }
+    if (digitsOnly.length >= 6) {
+      formattedNumber += ` ${digitsOnly.slice(3, 6)}`;
+    }
+    if (digitsOnly.length > 6) {
+      formattedNumber += `-${digitsOnly.slice(6)}`;
+    }
+
+    return formattedNumber;
+  };
 
   async function handleSubmit(): Promise<void> {
     try {
@@ -26,7 +48,7 @@ function MainPage() {
         firstName,
         lastName,
         emailAddress,
-        address,
+        phoneNumber,
         schools,
         jobs,
       }
@@ -34,7 +56,7 @@ function MainPage() {
       console.log(payload);
 
       const resumeOut = (await generateResume({...payload}));
-      history.push(`/resume/${resumeOut.id}`);
+      history.push(`/resume/${resumeOut.id}`);      
       setWaitingForResume(false);
     } catch (error) {
       alert('Something went wrong, please try again');
@@ -46,10 +68,12 @@ function MainPage() {
   const addSchool = () => {
     const newSchool: ISchoolPayload = {
       name: '',
+      location: '',
       degree: '',
       notes: '',
       gpa: 0,
-      major: '',      
+      major: '',
+      accomplishments: [], 
     }
     setSchools([...schools, newSchool]);
   }
@@ -68,6 +92,9 @@ function MainPage() {
       case 'name':
         data[index].name = event.target.value;
         break;
+      case 'location':
+          data[index].location = event.target.value;
+          break;
       case 'degree':
         data[index].degree = event.target.value;
         break;
@@ -175,13 +202,13 @@ function MainPage() {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmailAddress(event.target.value)}
             required
           />
-          <label className="formLabel">Address</label>
+          <label className="formLabel">Phone</label>
           <input
-            id="address"
+            id="phoneNumber"
             className="formStyle"
             type="text"
-            value={address}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setAddress(event.target.value)}
+            value={phoneNumber}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPhoneNumber(event.target.value)}
             required
           />
         </div>
@@ -202,6 +229,17 @@ function MainPage() {
                   className="formStyle" 
                   placeholder="Harvard University" 
                   value={school.name}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSchoolsChange(index, event)}
+                  required />
+              </div>
+              <div className="mb-6">
+                <label htmlFor={`schoollocation${index}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Location</label>
+                <input 
+                  type="text"
+                  id={`schoollocation${index}`}
+                  className="formStyle"
+                  placeholder="Raleigh, NC"
+                  value={school.location}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSchoolsChange(index, event)}
                   required />
               </div> 
@@ -265,9 +303,20 @@ function MainPage() {
               <input 
                 type="text" 
                 id={`jobcompany${index}`}
-                className="formStyle" 
+                className="formStyle"
                 placeholder="JP Morgan Chase"
                 value={job.company}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleJobsChange(index, event)}
+                required />
+            </div>
+            <div className="mb-6">
+              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Location</label>
+              <input 
+                type="text" 
+                id={`joblocation${index}`}
+                className="formStyle" 
+                placeholder="Raleigh, NC"
+                value={job.location}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleJobsChange(index, event)}
                 required />
             </div>

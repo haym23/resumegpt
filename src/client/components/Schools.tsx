@@ -11,18 +11,26 @@ interface SchoolsProps {
 export const Schools = ({ schools }: SchoolsProps) => {
   return (
     <SectionWrapper title="Schools">
-      <ul className="ml-1 sm:ml-2">
+      <ul className="ml-1">
         {schools.map((school, i) => (
           <li key={school.name} className={i % 2 ? `mt-1` : `mt-half`}>
             <div className="flex">
-              <div className="text-sm sm:text-base md:text-xl">
-                {school.name} - school.location
-              </div>
+              <h2>
+                {school.name}
+              </h2>
               <span className="ml-auto text-muted">{school.startDate}</span>
             </div>
-            <div className="text-xs sm:text-sm md:text-base">
-              {school.degree}, {school.major}
+            <div className="flex">
+              <h3>
+                {school.degree}, {school.major}
+              </h3>
+              <span className="ml-auto text-muted">{school.location}</span>
             </div>
+            <ul className="list-disc ml-4">
+              {school.accomplishments.map((resp) => (
+                <li key={resp}>{resp}</li>
+              ))}
+            </ul>
           </li>
         ))}
       </ul>

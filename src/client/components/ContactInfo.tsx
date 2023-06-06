@@ -5,7 +5,7 @@ interface ContactInfoProps {
   firstName: string;
   lastName: string;
   email: string;
-  address: string
+  phoneNumber: string;
 }
 
 export const ContactInfo = (props: ContactInfoProps) => {
@@ -15,22 +15,22 @@ export const ContactInfo = (props: ContactInfoProps) => {
 
   return (
     <div className="text-center">
-      <div className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-bold">{props.firstName} {props.lastName}</div>
+      <h2 className="hover:border-blue-500 transition duration-300">{props.firstName} {props.lastName}</h2>
 
-      <h2>contactInfo.title</h2>
+      <h3>contactInfo.title</h3>
 
-      <div className="text-xs sm:text-sm md:text-base lg:text-lg">
+      <div className="resumeContent">
         <a href={`mailto:${props.email}`}>{props.email}</a>
         {true && (
           <>
-            <span className="text-2xs sm:text-sm mx-0.5 sm:mx-1">•</span>
-            <a href="{config.contactInfo.firstLink}">{cleanLink("config.contactInfo.firstLink")}</a>
+            <span className="mx-2">•</span>
+            <a href={`tel:${props.phoneNumber}`}>{props.phoneNumber}</a>
           </>
         )}
 
         {true && (
           <>
-            <span className="text-2xs sm:text-sm mx-0.5 sm:mx-1">•</span>
+            <span className="mx-2">•</span>
             <a href={"config.contactInfo.secondLink"}>{cleanLink("config.contactInfo.secondLink")}</a>
           </>
         )}

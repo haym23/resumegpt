@@ -10,12 +10,14 @@ interface SkillsProps {
 export const Skills = ({ skills }: SkillsProps) => {
   return (
     <SectionWrapper title="Skills">
-      {skills.map((skill) => (
-        <div className="leading-5 inline-block text-xs sm:text-sm md:text-base">
-          <span className="text-2xs sm:text-sm mx-0.5 sm:mx-1">•</span>
-          <span>{skill}</span>
-        </div>
+      <ul className="leading-5 grid grid-cols-3 gap-4">
+      {skills.map((skill, index) => (
+        <li key={index} className="flex items-center">
+          <span className="h-1 w-1 rounded-full bg-black mr-2"></span>
+          {skill}
+        </li>
       ))}
+      </ul>
     </SectionWrapper>
   );
 };

@@ -8,7 +8,7 @@ interface SummaryProps {
 export const Summary = ({ summary }: SummaryProps) => {
   return (
     <SectionWrapper title="Summary">
-      <div className="leading-5 text-xs sm:text-sm md:text-md lg:text-lg">{summary}</div>
+      <div className="ml-1 leading-5">{summary}</div>
     </SectionWrapper>
   );
 };

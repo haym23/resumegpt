@@ -25,12 +25,12 @@ const getPrompt = (resume: ResumePayload) => {
   
   \n
   In schools, using the notes, create an accomplishments field in the JSON response.
-  In schools, the accomplishments field shall contain 2 or 3 full sentences in an array format, comprising of responsibilities an employee might have.
+  In schools, the accomplishments field shall contain 2 full sentences in an array format, comprising of accomplishments given by the student.
   In schools, if a school name is recognized, use the full name of that school in the value of the JSON output.
   In schools, if a major is recognized, use the full name of that major in the value of the JSON output.
 
   In jobs, using the notes, create an responsibilities field in the JSON response.
-  In jobs, the responsibilities field shall contain 2 or 3 full sentences in an array format, comprising of responsibilities an employee might have.
+  In jobs, the responsibilities field shall contain 4 full sentences in an array format, comprising of responsibilities an employee might have.
   In jobs, if a job title is recognized, use the full name of that job title in the value of the JSON output.
   In jobs, if a company is recognized, use the full name of that company in the value of the JSON output.
   In addition, based on the information provided, create an "objective" statement relating to the jobs and education given. Include this in the JSON response.
@@ -39,6 +39,12 @@ const getPrompt = (resume: ResumePayload) => {
   ;
 
   return prompt;
+}
+
+const saveResume: GenerateResume<ResumePayload, Resume> = async (
+  resume
+) => {
+  return resume;
 }
 
 export const generateResume: GenerateResume<ResumePayload, Resume> = async (
@@ -52,6 +58,7 @@ export const generateResume: GenerateResume<ResumePayload, Resume> = async (
     // Find the starting and ending positions of the JSON code
     const start = response.text.indexOf('{');
     const end = response.text.lastIndexOf('}');
+    console.log(response.text);
 
     let resumeWithResponse: ResumePayload;
     if (start !== -1 && end !== -1) {
