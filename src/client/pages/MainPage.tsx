@@ -10,21 +10,20 @@ import { ISchoolPayload, IJobPayload } from '../../shared/types';
 import '../styles/Main.css';
 
 function MainPage() {
+  const history = useHistory();
+  const { data: user, isLoading: isUserLoading } = useAuth();
+
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [emailAddress, setEmailAddress] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [schools, setSchools] = useState<Array<ISchoolPayload>>(new Array<ISchoolPayload>());
   const [jobs, setJobs] = useState<Array<IJobPayload>>(new Array<IJobPayload>());
   const [waitingForResume, setWaitingForResume] = useState(false);
 
-  const history = useHistory();
-
-  const { data: user, isLoading: isUserLoading } = useAuth();
-
   const formatPhoneNumber = (): string => {
     // Remove all non-digit characters from the input
-    const digitsOnly = phoneNumber.replace(/\D/g, '');
+    const digitsOnly = phone.replace(/\D/g, '');
 
     // Format the phone number
     let formattedNumber = '';
@@ -47,17 +46,20 @@ function MainPage() {
       const payload = {
         firstName,
         lastName,
-        emailAddress,
-        phoneNumber,
+        phone,
         schools,
         jobs,
       }
 
       console.log(payload);
 
-      const resumeOut = (await generateResume({...payload}));
-      history.push(`/resume/${resumeOut.id}`);      
-      setWaitingForResume(false);
+      if (user) {
+        const resumeOut = (await generateResume({...payload}));
+        history.push(`/resume/${resumeOut.id}`, { resumeOut });
+        setWaitingForResume(false);
+      } else {
+        alert('Please log in before submitting a resume');
+      }
     } catch (error) {
       alert('Something went wrong, please try again');
       console.error(error);
@@ -195,20 +197,20 @@ function MainPage() {
           />
           <label className="formLabel">Email</label>
           <input
-            id="emailAddress"
+            id="email"
             className="formStyle"
             type="email"
-            value={emailAddress}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmailAddress(event.target.value)}
+            value={email}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)}
             required
           />
           <label className="formLabel">Phone</label>
           <input
-            id="phoneNumber"
+            id="phone"
             className="formStyle"
             type="text"
-            value={phoneNumber}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPhoneNumber(event.target.value)}
+            value={phone}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPhone(event.target.value)}
             required
           />
         </div>

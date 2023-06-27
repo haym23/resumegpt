@@ -1,7 +1,7 @@
 // @ts-ignore
 import React, { useState, useEffect } from 'react';
 // @ts-ignore
-import { match } from "react-router-dom";
+import { match, useLocation } from "react-router-dom";
 import { useQuery } from "@wasp/queries";
 import getResume from "@wasp/queries/getResume";
 import getJobs from "@wasp/queries/getJobs";
@@ -11,6 +11,7 @@ import Spinner from "../components/Spinner";
 import { IJobPayload, ISchoolPayload } from '../../shared/types';
 import html2pdf from "html2pdf.js";
 import { ContactInfo, Summary, Jobs, Schools, Skills} from "../components";
+import useAuth from '@wasp/auth/useAuth';
 
 
 import '../styles/Resume.css';
@@ -24,14 +25,33 @@ const MED_SCREEN_WIDTH = 768;
  */
 export function ResumePage({ match }: { match: match<{ id: string }> }) {
   const resumeRef = React.useRef<HTMLDivElement | null>(null);
+  const { data: user, isLoading: isUserLoading } = useAuth();
+  // Load resume data if guest
+  // let resumein = null;
+  // let jobsin = null;
+  // let schoolsin = null;
+  // let loadingResume = false;
+  // if (user === null && !isUserLoading) {
+  //   const location = useLocation();
+  //   resumein = location.state?.resumeOut;
+  //   console.log('Not a user, got a resume in: ', resumein);
+  //   jobsin = resumein.jobs;
+  //   schoolsin = resumein.schools;
+  //   console.log('Got a resume in: ', resumein);
+  // } else {
+    console.log('User is not null, loading from DB');
+    const id = match.params.id as string;
+
+    const { data: resume, isLoading: isLoadingResume } = useQuery<{ id: string }, Resume>(getResume, { id });
+    const { data: jobs } = useQuery<{ resumeId: string }, IJobPayload[]>(getJobs, { resumeId: resume?.id || '' });
+    const { data: schools } = useQuery<{ resumeId: string }, ISchoolPayload[]>(getSchools, { resumeId: resume?.id || '' });
+  //   jobsin = jobs;
+  //   schoolsin = schools;
+  //   loadingResume = isLoadingResume;
+  // }
+
   const [showAlert, setShowAlert] = useState(false);
   const [ackAlert, setAckAlert] = useState(false);
-
-  const id = match.params.id as string;
-
-  const { data: resume, isLoading: isLoadingResume } = useQuery<{ id: string }, Resume>(getResume, { id });
-  const { data: jobs } = useQuery<{ resumeId: string }, IJobPayload[]>(getJobs, { resumeId: resume?.id || '' });
-  const { data: schools } = useQuery<{ resumeId: string }, ISchoolPayload[]>(getSchools, { resumeId: resume?.id || '' });
 
   useEffect(() => {
     const handleResize = () => {
@@ -82,8 +102,8 @@ export function ResumePage({ match }: { match: match<{ id: string }> }) {
             <ContactInfo 
               firstName={resume.firstName} 
               lastName={resume.lastName} 
-              email={resume.emailAddress} 
-              phoneNumber={resume.phoneNumber}/>
+              email='{resume.email}'
+              phone={resume.phone}/>
             <Summary summary={resume.objective || 'Fill summary here'}/>
             <Schools schools={schools}/>
             <Jobs jobs={jobs} />

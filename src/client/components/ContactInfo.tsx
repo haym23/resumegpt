@@ -5,7 +5,7 @@ interface ContactInfoProps {
   firstName: string;
   lastName: string;
   email: string;
-  phoneNumber: string;
+  phone: string;
 }
 
 export const ContactInfo = (props: ContactInfoProps) => {
@@ -24,7 +24,7 @@ export const ContactInfo = (props: ContactInfoProps) => {
         {true && (
           <>
             <span className="mx-2">•</span>
-            <a href={`tel:${props.phoneNumber}`}>{props.phoneNumber}</a>
+            <a href={`tel:${props.phone}`}>{props.phone}</a>
           </>
         )}
 

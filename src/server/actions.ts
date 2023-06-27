@@ -69,16 +69,22 @@ export const generateResume: GenerateResume<ResumePayload, Resume> = async (
     }
 
     const resumeOut = Object.assign(resume, resumeWithResponse);
-
-    const result = await context.entities.Resume.create({
-      data: {
-        ...resumeOut,
-        jobs: {createMany: {data: resumeOut.jobs as Job[]}},
-        schools: {createMany: {data: resumeOut.schools as School[]}},
-      }
-    });
-
-    return result;
+    if (context.user) {
+      // If user is logged in, save the resume to the database
+      const result = await context.entities.Resume.create({
+        data: {
+          ...resumeOut,
+          jobs: {createMany: {data: resumeOut.jobs as Job[]}},
+          schools: {createMany: {data: resumeOut.schools as School[]}},
+          userId: context.user.id
+        },
+      });
+  
+      return result;
+    } else {
+      // If user is not logged in, return the resume without saving
+      return resumeOut;
+    }
   } catch (e) {
     console.log(e);
     throw(e);
